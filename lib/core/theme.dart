@@ -7,7 +7,7 @@ class SigmaTheme {
   SigmaTheme._();
 
   static final ThemeData appTheme = ThemeData(
-    fontFamily: "FilsonPro",
+    fontFamily: SigmaConstants.fontFamily,
     scaffoldBackgroundColor: SigmaColors.white,
     appBarTheme: AppBarTheme(
       backgroundColor: SigmaColors.white,

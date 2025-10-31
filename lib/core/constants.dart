@@ -3,5 +3,5 @@ class SigmaConstants {
 
   static const String appName = "Sigma Notes";
   static const String baseUrl = "https://api.sigma.com/mock";
-  static const String fontFamily = "FilsonPro";
+  static const String fontFamily = "FormaDJR";
 }

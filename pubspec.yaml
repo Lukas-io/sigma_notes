@@ -38,8 +38,6 @@ flutter:
     - assets/
     - assets/fonts/
 
-
-
   fonts:
     - family: FormaDJR
       fonts:

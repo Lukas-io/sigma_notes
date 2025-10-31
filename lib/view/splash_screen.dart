@@ -15,7 +15,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Future.delayed(const Duration(milliseconds: 800), () {
-        // if (mounted) context.go(SigmaRoutes.login);
+        if (mounted) context.go(SigmaRoutes.login);
       });
     });
     super.initState();
@@ -24,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: SigmaColors.lightGreenBackground,
-      body: Center(child: Text("sigma", style: TextStyle(color: SigmaColors.darkGreen, fontSize: 52, fontWeight: FontWeight.w900),),),
+      body: Center(child: Text("sigma", style: TextStyle(color: SigmaColors.darkGreen, fontSize: 52, fontWeight: FontWeight.w800),),),
     );
   }
 }
