@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:sigma_notes/core/assets.dart';
+
 class UsernameGenerator {
   static final List<String> _prefixes = [
     'Sigma',
@@ -46,9 +48,9 @@ class UsernameGenerator {
   ];
 
   static final List<String> _avatars = [
-    'assets/images/avatar1.png',
-    'assets/images/avatar2.png',
-    'assets/images/avatar3.png',
+    SigmaAssets.avatar1,
+    SigmaAssets.avatar2,
+    SigmaAssets.avatar3,
   ];
 
   static final Random _random = Random();

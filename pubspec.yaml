@@ -23,6 +23,8 @@ dependencies:
   riverpod_annotation: ^3.0.3
   figma_squircle: ^0.6.3
   flutter_svg: ^2.2.1
+  intl: ^0.20.2
+  animations: ^2.1.0
 
 dev_dependencies:
   flutter_test:

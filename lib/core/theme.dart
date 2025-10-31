@@ -9,12 +9,9 @@ class SigmaTheme {
   static final ThemeData appTheme = ThemeData(
     fontFamily: SigmaConstants.fontFamily,
     scaffoldBackgroundColor: SigmaColors.white,
-    appBarTheme: AppBarTheme(
-      backgroundColor: SigmaColors.white,
-      surfaceTintColor: SigmaColors.white,
-    ),
+    appBarTheme: AppBarTheme(backgroundColor: SigmaColors.white),
 
-    colorScheme: ColorScheme.fromSeed(seedColor: Colors.pink),
+    colorScheme: ColorScheme.fromSeed(seedColor: SigmaColors.darkGreen),
     inputDecorationTheme: InputDecorationThemeData(
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(0)),
     ),

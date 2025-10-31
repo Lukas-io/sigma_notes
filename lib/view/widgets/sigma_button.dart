@@ -50,7 +50,7 @@ class SigmaButton extends StatelessWidget {
               backgroundColor: backgroundColor,
               shape: SmoothRectangleBorder(
                 borderRadius: SmoothBorderRadius(
-                  cornerRadius: 10,
+                  cornerRadius: 12,
                   cornerSmoothing: 1,
                 ),
               ),

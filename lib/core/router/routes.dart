@@ -1,9 +1,8 @@
 import 'package:go_router/go_router.dart';
 
-import '../../view/home_screen.dart';
+import '../../view/home/home_screen.dart';
 import '../../view/login_screen.dart';
 import '../../view/splash_screen.dart';
-
 
 class SigmaRoutes {
   SigmaRoutes._();
@@ -15,8 +14,7 @@ class SigmaRoutes {
   static const String home = "/home";
 
   static bool isAuth(String route) {
-    return route == root ||
-        route == login;
+    return route == root || route == login;
   }
 
   static final List<RouteBase> allRoutes = [
