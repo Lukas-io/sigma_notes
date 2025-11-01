@@ -28,8 +28,6 @@ class NotePreviewWidget extends ConsumerStatefulWidget {
 class _NotePreviewWidgetState extends ConsumerState<NotePreviewWidget> {
   @override
   Widget build(BuildContext context) {
-    final biometricsNotifier = ref.read(biometricsProvider.notifier);
-
     final note = widget.note;
     return OpenContainer(
       transitionDuration: Duration(milliseconds: 300),
@@ -53,14 +51,17 @@ class _NotePreviewWidgetState extends ConsumerState<NotePreviewWidget> {
         return GestureDetector(
           onTap: () async {
             if (note.locked) {
-              // Capture notifier first
+              // Read LocalAuthentication directly - it's keepAlive so won't dispose
+              final auth = ref.read(localAuthProvider);
 
-              // Perform authentication
-              final result = await biometricsNotifier.authenticate(
+              // Use the service directly - no provider lifecycle issues
+              final result = await BiometricService.authenticate(
+                auth: auth,
                 localizedReason: 'Unlock your Note',
               );
 
-              if (mounted) return; // widget might be gone
+              // Check if widget is still mounted after async gap
+              if (!mounted) return;
 
               log(result.toString());
               if (result.success) {
@@ -85,7 +86,7 @@ class _NotePreviewWidgetState extends ConsumerState<NotePreviewWidget> {
                   //Locked Notes
                   Positioned.fill(
                     child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                      filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
                       child: Container(
                         color: SigmaColors.white.withOpacity(0.1),
                         child: Column(

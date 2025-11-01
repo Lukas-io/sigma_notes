@@ -90,10 +90,9 @@ final sampleNotes = [
   NoteModel(
     id: 1,
     title: "Morning Reflections",
-    content: """
-Today I learned about the power of consistency — small steps taken daily can build massive momentum over time.
-I want to apply this in journaling and studying the Word, even if it’s just 10 minutes each morning.
-""",
+    content:
+        """Today I learned about the power of consistency — small steps taken daily can build massive momentum over time.
+I want to apply this in journaling and studying the Word, even if it’s just 10 minutes each morning.""",
     label: "Reflection",
     locked: false,
     collaborators: false,

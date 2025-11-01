@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sigma_notes/models/note.dart';
 import 'package:sigma_notes/view/note/note_app_bar.dart';
+import 'package:sigma_notes/view/note/note_bottom_bar.dart';
 import 'package:sigma_notes/view/note/note_screen_content.dart';
 
 import '../../core/colors.dart';
@@ -45,7 +46,7 @@ class NoteScreen extends StatelessWidget {
             bottom: 0,
             left: 0,
             right: 0,
-            height: 100,
+            height: 120,
             child: Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -55,6 +56,11 @@ class NoteScreen extends StatelessWidget {
                 ),
               ),
             ),
+          ),
+
+          Positioned(
+            bottom: 16,
+            child: SafeArea(top: false, child: NoteBottomBar()),
           ),
         ],
       ),

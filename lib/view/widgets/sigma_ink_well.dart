@@ -45,11 +45,14 @@ class _SigmaInkwellState extends State<SigmaInkwell> {
       onTapUp: _handleTapUp,
       onTapCancel: _handleTapCancel,
       onTap: widget.onTap,
-      child: AnimatedOpacity(
-        duration: widget.duration,
-        opacity: _isPressed ? widget.pressedOpacity : 1.0,
-        curve: widget.curve,
-        child: widget.child,
+      child: Container(
+        color: Colors.transparent,
+        child: AnimatedOpacity(
+          duration: widget.duration,
+          opacity: _isPressed ? widget.pressedOpacity : 1.0,
+          curve: widget.curve,
+          child: widget.child,
+        ),
       ),
     );
   }

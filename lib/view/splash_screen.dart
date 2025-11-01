@@ -20,11 +20,21 @@ class _SplashScreenState extends State<SplashScreen> {
     });
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: SigmaColors.lightGreenBackground,
-      body: Center(child: Text("sigma", style: TextStyle(color: SigmaColors.darkGreen, fontSize: 52, fontWeight: FontWeight.w700),),),
+      body: Center(
+        child: Text(
+          "sigma",
+          style: TextStyle(
+            color: SigmaColors.darkGreen,
+            fontSize: 52,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
     );
   }
 }

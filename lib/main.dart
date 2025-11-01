@@ -12,7 +12,7 @@ class SigmaNotes extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final router = SigmaRouter.router(ref);
+    final router = ref.watch(routerProvider);
     return MaterialApp.router(
       title: 'Sigma Notes',
       theme: SigmaTheme.appTheme,

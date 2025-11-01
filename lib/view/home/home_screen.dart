@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sigma_notes/core/assets.dart';
+import 'package:sigma_notes/core/router/routes.dart';
 import 'package:sigma_notes/models/note.dart';
 import 'package:sigma_notes/view/home/home_search_bar.dart';
 import 'package:sigma_notes/view/home/note_list_view.dart';
@@ -23,10 +25,8 @@ class HomeScreen extends StatelessWidget {
         ),
         leadingWidth: 80,
         leading: SigmaInkwell(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ProfileScreen()),
-          ),
+          onTap: () => context.push(SigmaRoutes.profile),
+
           child: Padding(
             padding: const EdgeInsets.only(left: 16.0),
             child: Align(

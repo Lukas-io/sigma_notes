@@ -5,8 +5,8 @@ import '../device_info_service.dart';
 
 part 'device_info_provider.g.dart';
 
-// Provider for the service
-@riverpod
+// Provider for the service - keep alive since it's a lightweight singleton
+@Riverpod(keepAlive: true)
 DeviceInfoService deviceInfoService(Ref ref) {
   return DeviceInfoService();
 }

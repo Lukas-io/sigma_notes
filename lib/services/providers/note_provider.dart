@@ -5,7 +5,8 @@ import '../repositories/note_repository.dart';
 
 part 'note_provider.g.dart';
 
-@riverpod
+// Notes repository provider - keep alive since it's a lightweight singleton
+@Riverpod(keepAlive: true)
 NotesRepository notesRepository(Ref ref) {
   return NotesRepository();
 }

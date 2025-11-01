@@ -22,7 +22,7 @@ final class NotesRepositoryProvider
         argument: null,
         retry: null,
         name: r'notesRepositoryProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -49,7 +49,7 @@ final class NotesRepositoryProvider
   }
 }
 
-String _$notesRepositoryHash() => r'7c6b703997e054b28f9a92cc8473da92a76728cb';
+String _$notesRepositoryHash() => r'dc6a002055b829da1044f15480c2579be5963b9c';
 
 @ProviderFor(NotesNotifier)
 const notesProvider = NotesNotifierProvider._();

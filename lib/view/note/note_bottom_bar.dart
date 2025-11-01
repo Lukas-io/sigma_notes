@@ -1,53 +1,54 @@
+import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:sigma_notes/core/assets.dart';
 import 'package:sigma_notes/core/colors.dart';
+import 'package:sigma_notes/view/widgets/sigma_ink_well.dart';
+import 'package:sigma_notes/view/widgets/svg_button.dart';
 import 'package:sprung/sprung.dart';
-import 'dart:ui';
 
-enum NoteBarType { standard, text, draw, layout, details, minimal }
+enum NoteBarType { minimal, standard, text, draw, layout, details }
 
 class NoteBottomBar extends StatelessWidget {
   final NoteBarType type;
 
-  const NoteBottomBar({super.key, this.type = NoteBarType.minimal});
+  const NoteBottomBar({super.key, this.type = NoteBarType.details});
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: MediaQuery.widthOf(context) - 32),
+      child: Material(
+        elevation: 30,
+        color: SigmaColors.white.withOpacity(0),
+        shadowColor: SigmaColors.white.withOpacity(0.2),
         child: Container(
           decoration: BoxDecoration(
             border: Border.all(color: SigmaColors.card),
-            color: SigmaColors.white.withOpacity(0.75),
+            color: Colors.white,
+            borderRadius: SmoothBorderRadius(
+              cornerRadius: 12,
+              cornerSmoothing: 1,
+            ),
           ),
+
           child: AnimatedSize(
             duration: 800.ms,
             curve: Sprung(28),
             clipBehavior: Clip.none,
             child: AnimatedSwitcher(
-              duration: 600.ms,
-              switchInCurve: Curves.easeOut,
-              switchOutCurve: Curves.easeOut,
-              child: Builder(
-                key: ValueKey(type),
-                builder: (_) {
-                  switch (type) {
-                    case NoteBarType.standard:
-                      return _StandardBar();
-                    case NoteBarType.text:
-                      return _TextBar();
-                    case NoteBarType.draw:
-                      return _DrawBar();
-                    case NoteBarType.layout:
-                      return _LayoutBar();
-                    case NoteBarType.details:
-                      return _DetailsBar();
-                    case NoteBarType.minimal:
-                      return _MinimalBar();
-                  }
-                },
-              ),
+              duration: 150.ms,
+              switchInCurve: Sprung(28),
+              switchOutCurve: Sprung(28),
+              child: switch (type) {
+                NoteBarType.standard => _StandardBar(),
+                NoteBarType.text => _TextBar(),
+                NoteBarType.draw => _DrawBar(),
+                NoteBarType.layout => _LayoutBar(),
+                NoteBarType.details => _DetailsBar(),
+                NoteBarType.minimal => _MinimalBar(),
+              },
             ),
           ),
         ),
@@ -63,14 +64,38 @@ class _StandardBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final items = List.generate(10, (i) => "Standard Item $i");
-    return ListView.separated(
-      padding: const EdgeInsets.all(12),
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: items.length,
-      itemBuilder: (_, i) => ListTile(title: Text(items[i])),
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          SvgButton(
+            onTap: () {},
+            assetPath: SigmaAssets.standardDrawSvg,
+            filled: false,
+          ),
+          SvgButton(
+            onTap: () {},
+            assetPath: SigmaAssets.standardCheckSvg,
+            filled: false,
+          ),
+          SvgButton(
+            onTap: () {},
+            assetPath: SigmaAssets.standardLayoutSvg,
+            filled: false,
+          ),
+          SvgButton(
+            onTap: () {},
+            assetPath: SigmaAssets.standardTextSvg,
+            filled: false,
+          ),
+          SvgButton(
+            onTap: () {},
+            assetPath: SigmaAssets.standardCommandSvg,
+            filled: false,
+          ),
+        ],
+      ).animate().fadeIn(duration: 1000.ms, curve: Curves.easeOut),
     );
   }
 }
@@ -80,14 +105,38 @@ class _TextBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final items = List.generate(8, (i) => "Text Item $i");
-    return ListView.separated(
-      padding: const EdgeInsets.all(12),
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: items.length,
-      itemBuilder: (_, i) => ListTile(title: Text(items[i])),
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          SvgButton(
+            onTap: () {},
+            assetPath: SigmaAssets.detailsSvg,
+            filled: false,
+          ),
+          SvgButton(
+            onTap: () {},
+            assetPath: SigmaAssets.detailsSvg,
+            filled: false,
+          ),
+          SvgButton(
+            onTap: () {},
+            assetPath: SigmaAssets.detailsSvg,
+            filled: false,
+          ),
+          SvgButton(
+            onTap: () {},
+            assetPath: SigmaAssets.detailsSvg,
+            filled: false,
+          ),
+          SvgButton(
+            onTap: () {},
+            assetPath: SigmaAssets.detailsSvg,
+            filled: false,
+          ),
+        ],
+      ).animate().fadeIn(duration: 1000.ms, curve: Curves.easeOut),
     );
   }
 }
@@ -97,14 +146,38 @@ class _DrawBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final items = List.generate(6, (i) => "Draw Tool $i");
-    return ListView.separated(
-      padding: const EdgeInsets.all(12),
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: items.length,
-      itemBuilder: (_, i) => ListTile(title: Text(items[i])),
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          SvgButton(
+            onTap: () {},
+            assetPath: SigmaAssets.detailsSvg,
+            filled: false,
+          ),
+          SvgButton(
+            onTap: () {},
+            assetPath: SigmaAssets.detailsSvg,
+            filled: false,
+          ),
+          SvgButton(
+            onTap: () {},
+            assetPath: SigmaAssets.detailsSvg,
+            filled: false,
+          ),
+          SvgButton(
+            onTap: () {},
+            assetPath: SigmaAssets.detailsSvg,
+            filled: false,
+          ),
+          SvgButton(
+            onTap: () {},
+            assetPath: SigmaAssets.detailsSvg,
+            filled: false,
+          ),
+        ],
+      ).animate().fadeIn(duration: 1000.ms, curve: Curves.easeOut),
     );
   }
 }
@@ -114,14 +187,38 @@ class _LayoutBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final items = List.generate(5, (i) => "Layout Option $i");
-    return ListView.separated(
-      padding: const EdgeInsets.all(12),
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: items.length,
-      itemBuilder: (_, i) => ListTile(title: Text(items[i])),
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          SvgButton(
+            onTap: () {},
+            assetPath: SigmaAssets.detailsSvg,
+            filled: false,
+          ),
+          SvgButton(
+            onTap: () {},
+            assetPath: SigmaAssets.detailsSvg,
+            filled: false,
+          ),
+          SvgButton(
+            onTap: () {},
+            assetPath: SigmaAssets.detailsSvg,
+            filled: false,
+          ),
+          SvgButton(
+            onTap: () {},
+            assetPath: SigmaAssets.detailsSvg,
+            filled: false,
+          ),
+          SvgButton(
+            onTap: () {},
+            assetPath: SigmaAssets.detailsSvg,
+            filled: false,
+          ),
+        ],
+      ).animate().fadeIn(duration: 1000.ms, curve: Curves.easeOut),
     );
   }
 }
@@ -131,14 +228,38 @@ class _DetailsBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final items = List.generate(7, (i) => "Detail $i");
-    return ListView.separated(
-      padding: const EdgeInsets.all(12),
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: items.length,
-      itemBuilder: (_, i) => ListTile(title: Text(items[i])),
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          SvgButton(
+            onTap: () {},
+            assetPath: SigmaAssets.detailsSvg,
+            filled: false,
+          ),
+          SvgButton(
+            onTap: () {},
+            assetPath: SigmaAssets.detailsSvg,
+            filled: false,
+          ),
+          SvgButton(
+            onTap: () {},
+            assetPath: SigmaAssets.detailsSvg,
+            filled: false,
+          ),
+          SvgButton(
+            onTap: () {},
+            assetPath: SigmaAssets.detailsSvg,
+            filled: false,
+          ),
+          SvgButton(
+            onTap: () {},
+            assetPath: SigmaAssets.detailsSvg,
+            filled: false,
+          ),
+        ],
+      ).animate().fadeIn(duration: 1000.ms, curve: Curves.easeOut),
     );
   }
 }
@@ -148,14 +269,18 @@ class _MinimalBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final items = List.generate(4, (i) => "Minimal $i");
-    return ListView.separated(
-      padding: const EdgeInsets.all(12),
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: items.length,
-      itemBuilder: (_, i) => ListTile(title: Text(items[i])),
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
+    return SigmaInkwell(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+        child: Row(
+          spacing: 8,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text("Details", style: TextStyle()),
+            SvgPicture.asset(SigmaAssets.detailsSvg, width: 16, height: 16),
+          ],
+        ).animate().fadeIn(duration: 1000.ms, curve: Curves.easeOut),
+      ),
     );
   }
 }

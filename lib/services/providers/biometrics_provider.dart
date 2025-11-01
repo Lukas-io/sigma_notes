@@ -7,21 +7,18 @@ import 'package:local_auth_android/local_auth_android.dart';
 
 part 'biometrics_provider.g.dart';
 
-@riverpod
+// Keep this provider alive since LocalAuthentication is lightweight
+// and we don't want to recreate it constantly
+@Riverpod(keepAlive: true)
 LocalAuthentication localAuth(Ref ref) {
   return LocalAuthentication();
 }
 
-@riverpod
-class Biometrics extends _$Biometrics {
-  @override
-  FutureOr<bool> build() async {
-    // Check if biometrics is available on device
-    return await _checkBiometrics();
-  }
-
-  Future<bool> _checkBiometrics() async {
-    final auth = ref.read(localAuthProvider);
+/// Service class that handles biometric authentication
+/// This is a pure service - no Riverpod refs needed, so no lifecycle issues
+class BiometricService {
+  /// Check if biometrics are available on device
+  static Future<bool> canCheckBiometrics(LocalAuthentication auth) async {
     try {
       return await auth.canCheckBiometrics || await auth.isDeviceSupported();
     } catch (e) {
@@ -29,34 +26,26 @@ class Biometrics extends _$Biometrics {
     }
   }
 
-  Future<BiometricAuthResult> authenticate({
+  /// Get available biometric types
+  static Future<List<BiometricType>> getAvailableBiometrics(
+      LocalAuthentication auth) async {
+    try {
+      return await auth.getAvailableBiometrics();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /// Authenticate using biometrics
+  static Future<BiometricAuthResult> authenticate({
+    required LocalAuthentication auth,
     required String localizedReason,
-    bool useErrorDialogs = true,
-    bool stickyAuth = false,
     bool sensitiveTransaction = true,
   }) async {
-    // Use `ref.read` once at the start
-    final auth = ref.read(localAuthProvider);
-
     try {
-      // Async gap: check if provider is still mounted
-      if (!ref.mounted)
-        return BiometricAuthResult(
-          success: false,
-          errorType: BiometricErrorType.unknown,
-          errorMessage: 'Provider disposed before authentication',
-        );
-
       // Check if biometrics are available
-      final canCheckBiometrics = await _checkBiometrics();
-      if (!ref.mounted)
-        return BiometricAuthResult(
-          success: false,
-          errorType: BiometricErrorType.unknown,
-          errorMessage: 'Provider disposed during biometric check',
-        );
-
-      if (!canCheckBiometrics) {
+      final canCheck = await canCheckBiometrics(auth);
+      if (!canCheck) {
         return BiometricAuthResult(
           success: false,
           errorType: BiometricErrorType.notAvailable,
@@ -65,14 +54,7 @@ class Biometrics extends _$Biometrics {
       }
 
       // Check enrolled biometrics
-      final availableBiometrics = await getAvailableBiometrics();
-      if (!ref.mounted)
-        return BiometricAuthResult(
-          success: false,
-          errorType: BiometricErrorType.unknown,
-          errorMessage: 'Provider disposed during biometric availability check',
-        );
-
+      final availableBiometrics = await getAvailableBiometrics(auth);
       if (availableBiometrics.isEmpty) {
         return BiometricAuthResult(
           success: false,
@@ -96,43 +78,18 @@ class Biometrics extends _$Biometrics {
         ],
       );
 
-      if (!ref.mounted) {
-        return BiometricAuthResult(
-          success: false,
-          errorType: BiometricErrorType.unknown,
-          errorMessage: 'Provider disposed during authentication',
-        );
-      }
-
       return BiometricAuthResult(
         success: authenticated,
         errorType: authenticated ? null : BiometricErrorType.authFailed,
         errorMessage: authenticated ? null : 'Authentication failed',
       );
     } catch (e) {
-      if (!ref.mounted) {
-        return BiometricAuthResult(
-          success: false,
-          errorType: BiometricErrorType.unknown,
-          errorMessage: 'Provider disposed while handling exception',
-        );
-      }
       return _handleError(e);
     }
   }
 
-  // Get available biometrics
-  Future<List<BiometricType>> getAvailableBiometrics() async {
-    final auth = ref.read(localAuthProvider);
-    try {
-      return await auth.getAvailableBiometrics();
-    } catch (e) {
-      return [];
-    }
-  }
-
   /// Handle authentication errors
-  BiometricAuthResult _handleError(dynamic error) {
+  static BiometricAuthResult _handleError(dynamic error) {
     final errorString = error.toString().toLowerCase();
 
     if (errorString.contains('locked out')) {

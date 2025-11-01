@@ -8,14 +8,14 @@ import 'note_provider.dart';
 
 part 'auth_provider.g.dart';
 
-// Secure storage provider
-@riverpod
+// Secure storage provider - keep alive since it's a lightweight singleton
+@Riverpod(keepAlive: true)
 FlutterSecureStorage secureStorage(Ref ref) {
   return const FlutterSecureStorage();
 }
 
-// User repository provider
-@riverpod
+// User repository provider - keep alive since it's a lightweight singleton
+@Riverpod(keepAlive: true)
 UserRepository userRepository(Ref ref) {
   return UserRepository();
 }
