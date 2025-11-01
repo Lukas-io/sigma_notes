@@ -14,7 +14,11 @@ class SigmaAssets {
   //SVG
   static const String logoSvg = "$svg/logo.svg";
   static const String eyeOpenSvg = "$svg/eye-broken.svg";
+  static const String editSvg = "$svg/pen-broken.svg";
   static const String backSvg = "$svg/alt-arrow-left-broken.svg";
+  static const String frontSvg = "$svg/alt-arrow-right-broken.svg";
+  static const String playSvg = "$svg/play-bold.svg";
+  static const String pauseSvg = "$svg/pause-bold.svg";
   static const String checkMarkSvg = "$svg/unread-broken.svg";
   static const String eyeClosedSvg = "$svg/eye-closed-linear.svg";
   static const String searchSvg = "$svg/magnifer-broken.svg";

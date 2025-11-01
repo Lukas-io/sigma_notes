@@ -1,9 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sigma_notes/core/colors.dart';
-import 'package:sigma_notes/models/note.dart';
-import 'package:sigma_notes/view/home/note_preview_widget.dart';
-
-import 'package:flutter/material.dart';
 import 'package:sigma_notes/models/note.dart';
 import 'package:sigma_notes/view/home/note_preview_widget.dart';
 
@@ -36,29 +31,26 @@ class NoteListView extends StatelessWidget {
 
         return ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 800),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: SingleChildScrollView(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: columnSpacing,
-                children: [
-                  for (int i = 0; i < columns.length; i++) ...[
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          for (final note in columns[i])
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: NotePreviewWidget(note),
-                            ),
-                        ],
-                      ),
+          child: SingleChildScrollView(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: columnSpacing,
+              children: [
+                for (int i = 0; i < columns.length; i++) ...[
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        for (final note in columns[i])
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: NotePreviewWidget(note),
+                          ),
+                      ],
                     ),
-                  ],
+                  ),
                 ],
-              ),
+              ],
             ),
           ),
         );

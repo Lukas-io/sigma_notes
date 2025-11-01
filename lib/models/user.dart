@@ -1,20 +1,25 @@
+import 'package:uuid/uuid.dart';
+
 class User {
-  final String id; // Unique ID (we'll use email as ID for simplicity)
+  final String id; // UUID now!
   final String email;
   final String username;
-  final String profilePicture; // Asset path like 'assets/avatars/avatar1.png'
+  final String profilePicture;
   final bool isGuest;
   final DateTime createdAt;
 
   User({
-    required this.id,
+    String? id, // Make it optional so we can generate
     required this.email,
     required this.username,
     required this.profilePicture,
     this.isGuest = false,
-    required this.createdAt,
-  });
+    DateTime? createdAt,
+  }) : id = id ?? const Uuid().v4(),
+       // Generate UUID if not provided
+       createdAt = createdAt ?? DateTime.now();
 
+  // ... rest of your methods stay the same
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -37,7 +42,6 @@ class User {
     );
   }
 
-  // Copy with method for updating user
   User copyWith({
     String? id,
     String? email,

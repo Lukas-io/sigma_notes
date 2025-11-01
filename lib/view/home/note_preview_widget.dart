@@ -1,45 +1,100 @@
+import 'dart:ui';
+
 import 'package:figma_squircle/figma_squircle.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sigma_notes/core/assets.dart';
 import 'package:sigma_notes/core/colors.dart';
 import 'package:sigma_notes/models/note.dart';
 import 'package:sigma_notes/view/note/note_screen.dart';
-import 'package:sigma_notes/view/widgets/sigma_image.dart';
-import 'package:sigma_notes/view/widgets/sigma_ink_well.dart';
+import 'package:sigma_notes/view/widgets/collaborator_widget.dart';
 import 'package:sigma_notes/view/widgets/svg_button.dart';
+import 'package:animations/animations.dart';
 
-class NotePreviewWidget extends StatelessWidget {
+import '../../services/providers/biometrics_provider.dart';
+import '../note/note_check_list_item.dart';
+
+class NotePreviewWidget extends ConsumerWidget {
   final NoteModel note;
 
   const NotePreviewWidget(this.note, {super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return SigmaInkwell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => NoteScreen()),
-        );
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: SmoothBorderRadius(
-            cornerRadius: 12,
-            cornerSmoothing: 1,
-          ),
-          color: Colors.white,
-        ),
-        clipBehavior: Clip.hardEdge,
-        child: Stack(
-          children: [
-            // Locked Notes
-            NotePreviewContent(note),
-          ],
+  Widget build(BuildContext context, WidgetRef ref) {
+    return OpenContainer(
+      transitionDuration: Duration(milliseconds: 300),
+      transitionType: ContainerTransitionType.fadeThrough,
+      openBuilder: (context, _) => NoteScreen(note),
+      closedElevation: 1,
+      openShape: const SmoothRectangleBorder(
+        borderRadius: SmoothBorderRadius.all(
+          SmoothRadius(cornerRadius: 12, cornerSmoothing: 1),
         ),
       ),
+      openColor: SigmaColors.white,
+      openElevation: 0,
+      closedShape: const SmoothRectangleBorder(
+        borderRadius: SmoothBorderRadius.all(
+          SmoothRadius(cornerRadius: 12, cornerSmoothing: 1),
+        ),
+      ),
+      closedColor: SigmaColors.white,
+      closedBuilder: (context, openContainer) {
+        return GestureDetector(
+          onTap: () async {
+            if (note.locked) {
+              final result = await ref
+                  .read(biometricsProvider.notifier)
+                  .authenticate(localizedReason: 'Unlock your Note');
+              if (result.success) openContainer();
+            }
+            openContainer();
+          },
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: SmoothBorderRadius.all(
+                SmoothRadius(cornerRadius: 12, cornerSmoothing: 1),
+              ),
+            ),
+            clipBehavior: Clip.hardEdge,
+            child: Stack(
+              children: [
+                NotePreviewContent(note),
+                if (note.locked)
+                  //Locked Notes
+                  Positioned.fill(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                      child: Container(
+                        color: SigmaColors.white.withOpacity(0.1),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          spacing: 4,
+                          children: [
+                            SvgPicture.asset(
+                              SigmaAssets.lockSvg,
+                              width: 40,
+                              height: 40,
+                            ),
+                            Text(
+                              "Locked",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -54,65 +109,61 @@ class NotePreviewContent extends StatelessWidget {
     return Column(
       children: [
         Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: Image.asset(SigmaAssets.avatar2).image,
-              fit: BoxFit.cover,
-              opacity: 0.2,
-            ),
-          ),
-          height: 120,
+          decoration: note.imagePath == null
+              ? null
+              : BoxDecoration(
+                  image: DecorationImage(
+                    image: Image.asset(note.imagePath!).image,
+                    fit: BoxFit.cover,
+                    opacity: 0.2,
+                  ),
+                ),
+          height: note.imagePath == null ? null : 120,
           alignment: Alignment.topCenter,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 12.0, right: 12.0, top: 12),
-            child: Row(
-              spacing: 6,
-              children: [
-                Expanded(
+          child: !(note.collaborators || note.isPinned)
+              ? SizedBox(height: 4)
+              : Padding(
+                  padding: const EdgeInsets.only(
+                    left: 12.0,
+                    right: 12.0,
+                    top: 12,
+                  ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-
+                    spacing: 6,
                     children: [
                       Expanded(
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+
                           children: [
-                            CircleAvatar(
-                              backgroundColor: Colors.white,
-                              radius: 12,
-                              child: SigmaImage(
-                                assetPath: SigmaAssets.avatar1,
-                                borderRadius: BorderRadius.circular(360),
-                                width: 22,
-                                height: 22,
+                            if (note.collaborators)
+                              Expanded(child: CollaboratorWidget()),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 2.0,
+                              ),
+                              child: SvgButton(
+                                assetPath: SigmaAssets.pinSvg,
+                                filled: false,
+                                iconSize: 20,
+                                iconColor: SigmaColors.gray,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 2.0),
-                        child: SvgButton(
-                          assetPath: SigmaAssets.pinSvg,
-                          filled: false,
-                          iconSize: 20,
-                          iconColor: SigmaColors.gray,
-                        ),
+                      SvgButton(
+                        assetPath: SigmaAssets.moreVerticalSvg,
+                        filled: false,
+                        iconSize: 20,
+                        iconColor: SigmaColors.gray,
+                        onTap: () {
+                          print("object");
+                        },
                       ),
                     ],
                   ),
                 ),
-                SvgButton(
-                  assetPath: SigmaAssets.moreVerticalSvg,
-                  filled: false,
-                  iconSize: 20,
-                  iconColor: SigmaColors.gray,
-                  onTap: () {
-                    print("object");
-                  },
-                ),
-              ],
-            ),
-          ),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
@@ -121,6 +172,7 @@ class NotePreviewContent extends StatelessWidget {
 
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
                     child: Text(
@@ -133,15 +185,19 @@ class NotePreviewContent extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (false)
-                    SvgButton(
-                      assetPath: SigmaAssets.moreVerticalSvg,
-                      filled: false,
-                      iconSize: 20,
-                      iconColor: SigmaColors.gray,
-                      onTap: () {
-                        print("object");
-                      },
+                  if (!(note.isPinned || note.collaborators))
+                    Transform.translate(
+                      offset: Offset(8, 0),
+
+                      child: SvgButton(
+                        assetPath: SigmaAssets.moreVerticalSvg,
+                        filled: false,
+                        iconSize: 20,
+                        iconColor: SigmaColors.gray,
+                        onTap: () {
+                          print("object");
+                        },
+                      ),
                     ),
                 ],
               ),
@@ -187,55 +243,10 @@ class NoteCheckList extends StatelessWidget {
       padding: const EdgeInsets.only(top: 8.0),
       child: Column(
         spacing: 4,
-        children: [
-          checkListItem(true, "Book and confirm the delivery"),
-          checkListItem(false, "Arrange the decorations"),
-        ],
+        children: note.checkList
+            .map((model) => NoteCheckListItem(model: model))
+            .toList(),
       ),
-    );
-  }
-
-  Widget checkListItem(bool isChecked, String title) {
-    return Row(
-      spacing: 6,
-      children: [
-        isChecked
-            ? CircleAvatar(
-                radius: 7,
-                backgroundColor: SigmaColors.black,
-                child: Icon(
-                  CupertinoIcons.checkmark_alt,
-                  color: Colors.white,
-                  size: 10,
-                ),
-              )
-            : SvgPicture.asset(
-                SigmaAssets.circleSvg,
-                width: 14,
-                height: 14,
-
-                colorFilter: ColorFilter.mode(
-                  SigmaColors.gray,
-                  BlendMode.srcIn,
-                ),
-              ),
-        Expanded(
-          child: Text(
-            title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: isChecked ? SigmaColors.black : SigmaColors.gray,
-              fontSize: 12,
-              decoration: isChecked
-                  ? TextDecoration.lineThrough
-                  : TextDecoration.none,
-              decorationThickness: 2,
-              decorationColor: SigmaColors.black,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }
@@ -247,6 +258,8 @@ class NotePreviewChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (note.voiceNotes.isEmpty && note.label == null) return SizedBox.shrink();
+
     return Padding(
       padding: const EdgeInsets.only(top: 12.0),
       child: Wrap(
@@ -254,22 +267,26 @@ class NotePreviewChips extends StatelessWidget {
         runSpacing: 4,
         children: [
           //TODO: Tags....
-          Container(
-            decoration: BoxDecoration(
-              color: SigmaColors.black,
-              borderRadius: SmoothBorderRadius(
-                cornerRadius: 8,
-                cornerSmoothing: 1,
+          if (note.voiceNotes.isNotEmpty)
+            Container(
+              decoration: BoxDecoration(
+                color: SigmaColors.black,
+                borderRadius: SmoothBorderRadius(
+                  cornerRadius: 8,
+                  cornerSmoothing: 1,
+                ),
+              ),
+              padding: EdgeInsetsGeometry.all(4),
+              child: SvgPicture.asset(
+                SigmaAssets.soundWaveSvg,
+                height: 18,
+                width: 18,
+                colorFilter: ColorFilter.mode(
+                  SigmaColors.white,
+                  BlendMode.srcIn,
+                ),
               ),
             ),
-            padding: EdgeInsetsGeometry.all(4),
-            child: SvgPicture.asset(
-              SigmaAssets.soundWaveSvg,
-              height: 18,
-              width: 18,
-              colorFilter: ColorFilter.mode(SigmaColors.white, BlendMode.srcIn),
-            ),
-          ),
           // Container(
           //   decoration: BoxDecoration(
           //     color: SigmaColors.black,
@@ -288,24 +305,28 @@ class NotePreviewChips extends StatelessWidget {
           //     ),
           //   ),
           // ),
-          Container(
-            decoration: BoxDecoration(
-              color: SigmaColors.card,
-              borderRadius: SmoothBorderRadius(
-                cornerRadius: 8,
-                cornerSmoothing: 1,
+          if (note.label != null)
+            Container(
+              decoration: BoxDecoration(
+                color: SigmaColors.card,
+                borderRadius: SmoothBorderRadius(
+                  cornerRadius: 8,
+                  cornerSmoothing: 1,
+                ),
+              ),
+              padding: EdgeInsetsGeometry.symmetric(
+                horizontal: 12,
+                vertical: 6,
+              ),
+              child: Text(
+                note.label!,
+                style: TextStyle(
+                  fontSize: 10,
+                  color: SigmaColors.black,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-            padding: EdgeInsetsGeometry.symmetric(horizontal: 12, vertical: 6),
-            child: Text(
-              "Work",
-              style: TextStyle(
-                fontSize: 10,
-                color: SigmaColors.black,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
         ],
       ),
     );

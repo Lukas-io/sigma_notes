@@ -1,8 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
-import '../../core/colors.dart';
-
 class SigmaImage extends StatelessWidget {
   final String? assetPath; // for asset image
   final Uint8List? memoryBytes; // for in-memory image

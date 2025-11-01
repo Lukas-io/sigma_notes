@@ -3,10 +3,10 @@ import 'package:sigma_notes/core/assets.dart';
 import 'package:sigma_notes/models/note.dart';
 import 'package:sigma_notes/view/home/home_search_bar.dart';
 import 'package:sigma_notes/view/home/note_list_view.dart';
+import 'package:sigma_notes/view/profile/profile_screen.dart';
 import 'package:sigma_notes/view/widgets/sigma_image.dart';
+import 'package:sigma_notes/view/widgets/sigma_ink_well.dart';
 import 'package:sigma_notes/view/widgets/svg_button.dart';
-
-import '../../core/colors.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -22,16 +22,22 @@ class HomeScreen extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
         ),
         leadingWidth: 80,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 16.0),
-          child: Align(
-            alignment: AlignmentGeometry.centerLeft,
-            child: SigmaImage(
-              assetPath: SigmaAssets.avatar1,
-              fit: BoxFit.cover,
-              height: 44,
-              width: 44,
-              borderRadius: BorderRadius.circular(360),
+        leading: SigmaInkwell(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ProfileScreen()),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 16.0),
+            child: Align(
+              alignment: AlignmentGeometry.centerLeft,
+              child: SigmaImage(
+                assetPath: SigmaAssets.avatar1,
+                fit: BoxFit.cover,
+                height: 44,
+                width: 44,
+                borderRadius: BorderRadius.circular(360),
+              ),
             ),
           ),
         ),
@@ -50,10 +56,7 @@ class HomeScreen extends StatelessWidget {
         child: SafeArea(
           child: Column(
             spacing: 16,
-            children: [
-              HomeSearchBar(),
-              NoteListView([sampleNote, sampleNote]),
-            ],
+            children: [HomeSearchBar(), NoteListView(sampleNotes)],
           ),
         ),
       ),

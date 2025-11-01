@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'colors.dart';
@@ -11,7 +12,7 @@ class SigmaTheme {
     scaffoldBackgroundColor: SigmaColors.white,
     appBarTheme: AppBarTheme(backgroundColor: SigmaColors.white),
 
-    colorScheme: ColorScheme.fromSeed(seedColor: SigmaColors.darkGreen),
+    colorScheme: ColorScheme.fromSeed(seedColor: CupertinoColors.systemBlue),
     inputDecorationTheme: InputDecorationThemeData(
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(0)),
     ),
