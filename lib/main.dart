@@ -7,15 +7,16 @@ void main() {
   runApp(ProviderScope(child: const SigmaNotes()));
 }
 
-class SigmaNotes extends StatelessWidget {
+class SigmaNotes extends ConsumerWidget {
   const SigmaNotes({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = SigmaRouter.router(ref);
     return MaterialApp.router(
-      title: 'Flutter Demo',
-      theme:SigmaTheme.appTheme,
-     routerConfig: SigmaRouter.router,
+      title: 'Sigma Notes',
+      theme: SigmaTheme.appTheme,
+      routerConfig: router,
       debugShowCheckedModeBanner: false,
     );
   }
