@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:figma_squircle/figma_squircle.dart';
@@ -15,13 +16,21 @@ import 'package:animations/animations.dart';
 import '../../services/providers/biometrics_provider.dart';
 import '../note/note_check_list_item.dart';
 
-class NotePreviewWidget extends ConsumerWidget {
+class NotePreviewWidget extends ConsumerStatefulWidget {
   final NoteModel note;
 
   const NotePreviewWidget(this.note, {super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<NotePreviewWidget> createState() => _NotePreviewWidgetState();
+}
+
+class _NotePreviewWidgetState extends ConsumerState<NotePreviewWidget> {
+  @override
+  Widget build(BuildContext context) {
+    final biometricsNotifier = ref.read(biometricsProvider.notifier);
+
+    final note = widget.note;
     return OpenContainer(
       transitionDuration: Duration(milliseconds: 300),
       transitionType: ContainerTransitionType.fadeThrough,
@@ -44,12 +53,22 @@ class NotePreviewWidget extends ConsumerWidget {
         return GestureDetector(
           onTap: () async {
             if (note.locked) {
-              final result = await ref
-                  .read(biometricsProvider.notifier)
-                  .authenticate(localizedReason: 'Unlock your Note');
-              if (result.success) openContainer();
+              // Capture notifier first
+
+              // Perform authentication
+              final result = await biometricsNotifier.authenticate(
+                localizedReason: 'Unlock your Note',
+              );
+
+              if (mounted) return; // widget might be gone
+
+              log(result.toString());
+              if (result.success) {
+                openContainer();
+              }
+            } else {
+              openContainer();
             }
-            openContainer();
           },
           child: Container(
             decoration: const BoxDecoration(

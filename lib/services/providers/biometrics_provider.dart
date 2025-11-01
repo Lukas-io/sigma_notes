@@ -29,22 +29,32 @@ class Biometrics extends _$Biometrics {
     }
   }
 
-  /// Authenticate using biometrics
-  ///
-  /// [localizedReason] - Message to display to user
-  /// [useErrorDialogs] - Show error dialogs on failure
-  /// [stickyAuth] - Keep auth session alive
-  /// [sensitiveTransaction] - Require biometrics (no fallback)
   Future<BiometricAuthResult> authenticate({
     required String localizedReason,
     bool useErrorDialogs = true,
     bool stickyAuth = false,
     bool sensitiveTransaction = true,
   }) async {
+    // Use `ref.read` once at the start
     final auth = ref.read(localAuthProvider);
+
     try {
-      // Check if biometrics is available
+      // Async gap: check if provider is still mounted
+      if (!ref.mounted)
+        return BiometricAuthResult(
+          success: false,
+          errorType: BiometricErrorType.unknown,
+          errorMessage: 'Provider disposed before authentication',
+        );
+
+      // Check if biometrics are available
       final canCheckBiometrics = await _checkBiometrics();
+      if (!ref.mounted)
+        return BiometricAuthResult(
+          success: false,
+          errorType: BiometricErrorType.unknown,
+          errorMessage: 'Provider disposed during biometric check',
+        );
 
       if (!canCheckBiometrics) {
         return BiometricAuthResult(
@@ -53,8 +63,16 @@ class Biometrics extends _$Biometrics {
           errorMessage: 'Biometric authentication is not available',
         );
       }
-      // Check if biometrics are enrolled
+
+      // Check enrolled biometrics
       final availableBiometrics = await getAvailableBiometrics();
+      if (!ref.mounted)
+        return BiometricAuthResult(
+          success: false,
+          errorType: BiometricErrorType.unknown,
+          errorMessage: 'Provider disposed during biometric availability check',
+        );
+
       if (availableBiometrics.isEmpty) {
         return BiometricAuthResult(
           success: false,
@@ -62,12 +80,12 @@ class Biometrics extends _$Biometrics {
           errorMessage: 'No biometrics enrolled on this device',
         );
       }
+
       // Perform authentication
       final authenticated = await auth.authenticate(
         localizedReason: localizedReason,
         biometricOnly: sensitiveTransaction,
         sensitiveTransaction: sensitiveTransaction,
-
         authMessages: <AuthMessages>[
           AndroidAuthMessages(
             signInTitle: 'Biometric Authentication',
@@ -78,12 +96,27 @@ class Biometrics extends _$Biometrics {
         ],
       );
 
+      if (!ref.mounted) {
+        return BiometricAuthResult(
+          success: false,
+          errorType: BiometricErrorType.unknown,
+          errorMessage: 'Provider disposed during authentication',
+        );
+      }
+
       return BiometricAuthResult(
         success: authenticated,
         errorType: authenticated ? null : BiometricErrorType.authFailed,
         errorMessage: authenticated ? null : 'Authentication failed',
       );
     } catch (e) {
+      if (!ref.mounted) {
+        return BiometricAuthResult(
+          success: false,
+          errorType: BiometricErrorType.unknown,
+          errorMessage: 'Provider disposed while handling exception',
+        );
+      }
       return _handleError(e);
     }
   }
