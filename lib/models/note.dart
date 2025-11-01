@@ -39,8 +39,12 @@ class NoteModel {
     return DateFormat('MMMM d, y').format(createdAt);
   }
 
-  String get formattedDateTime {
+  String get formattedDateDayTime {
     return DateFormat('EEE, MMMM d, y HH:mm').format(createdAt);
+  }
+
+  String get formattedDateTime {
+    return DateFormat('MMMM d, y HH:mm').format(createdAt);
   }
 
   Map<String, dynamic> toMap() {

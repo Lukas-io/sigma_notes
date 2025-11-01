@@ -22,7 +22,7 @@ class NoteScreenContent extends StatelessWidget {
           children: [
             SizedBox(height: kToolbarHeight),
             Text(
-              "${note.title.trim()} My name is Wisdom and I am here to win and win and win",
+              note.title.trim(),
               style: TextStyle(
                 color: SigmaColors.black,
                 fontSize: 20,
@@ -32,7 +32,7 @@ class NoteScreenContent extends StatelessWidget {
             ),
             SizedBox(height: 4),
             Text(
-              "${note.label} ｜ ${note.formattedDateTime}",
+              "${note.label} ｜ ${note.formattedDateDayTime}",
               style: TextStyle(
                 color: SigmaColors.gray,
                 fontSize: 12,

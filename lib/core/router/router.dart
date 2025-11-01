@@ -27,15 +27,16 @@ class SigmaRouter {
         if (auth.isLoading) return null;
 
         final isLoggedIn = auth.value != null;
-        final isLoginRoute = state.matchedLocation == SigmaRoutes.login;
+        // Define public routes (accessible without login)
+        final publicRoutes = [SigmaRoutes.root, SigmaRoutes.login];
 
-        // Not logged in → go to login
-        if (!isLoggedIn && !isLoginRoute) {
+        final isPublicRoute = publicRoutes.contains(state.matchedLocation);
+
+        // Not logged in → block access to protected routes
+        if (!isLoggedIn && !isPublicRoute) {
           return SigmaRoutes.login;
         }
-
-        // Logged in → avoid login page
-        if (isLoggedIn && isLoginRoute) {
+        if (isLoggedIn && (state.matchedLocation == SigmaRoutes.login)) {
           return SigmaRoutes.home;
         }
 

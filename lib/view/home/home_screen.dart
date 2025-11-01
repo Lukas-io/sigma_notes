@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sigma_notes/core/assets.dart';
@@ -5,7 +6,7 @@ import 'package:sigma_notes/core/router/routes.dart';
 import 'package:sigma_notes/models/note.dart';
 import 'package:sigma_notes/view/home/home_search_bar.dart';
 import 'package:sigma_notes/view/home/note_list_view.dart';
-import 'package:sigma_notes/view/profile/profile_screen.dart';
+import 'package:sigma_notes/view/note/note_screen.dart';
 import 'package:sigma_notes/view/widgets/sigma_image.dart';
 import 'package:sigma_notes/view/widgets/sigma_ink_well.dart';
 import 'package:sigma_notes/view/widgets/svg_button.dart';
@@ -46,10 +47,26 @@ class HomeScreen extends StatelessWidget {
           SizedBox(width: 16),
         ],
       ),
-      floatingActionButton: SvgButton(
-        assetPath: SigmaAssets.plusSvg,
-        size: 52,
-        primary: true,
+      floatingActionButton: OpenContainer(
+        closedElevation: 10,
+        closedShape: const CircleBorder(),
+        transitionDuration: const Duration(milliseconds: 500),
+        closedBuilder: (context, openContainer) => SvgButton(
+          assetPath: SigmaAssets.plusSvg,
+          size: 52,
+          primary: true,
+          onTap: openContainer,
+        ),
+        openBuilder: (context, _) => NoteScreen(
+          NoteModel(
+            id: 7,
+            title: "Untitled document",
+            content: "",
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+            userId: "user_id_123",
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsetsGeometry.symmetric(vertical: 12, horizontal: 16),
