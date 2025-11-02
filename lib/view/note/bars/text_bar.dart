@@ -5,7 +5,7 @@ import '../../../core/assets.dart';
 import '../../widgets/svg_button.dart';
 
 class TextBar extends StatelessWidget {
-  const TextBar();
+  const TextBar({super.key});
 
   @override
   Widget build(BuildContext context) {

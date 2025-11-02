@@ -1,10 +1,12 @@
+import 'dart:convert';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import '../models/user.dart';
+import '../models/note.dart';
 
 class DatabaseService {
   static Database? _database;
 
-  // Singleton pattern
   static final DatabaseService instance = DatabaseService._init();
 
   DatabaseService._init();
@@ -35,13 +37,19 @@ class DatabaseService {
       )
     ''');
 
-    // Notes table
+    // Notes table - with JSON columns for lists
     await db.execute('''
       CREATE TABLE notes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
         content TEXT NOT NULL,
         imagePath TEXT,
+        label TEXT,
+        locked INTEGER NOT NULL DEFAULT 0,
+        collaborators INTEGER NOT NULL DEFAULT 0,
+        isPinned INTEGER NOT NULL DEFAULT 0,
+        checkList TEXT NOT NULL,
+        voiceNotes TEXT NOT NULL,
         createdAt TEXT NOT NULL,
         updatedAt TEXT NOT NULL,
         userId TEXT NOT NULL,
@@ -50,7 +58,6 @@ class DatabaseService {
     ''');
   }
 
-  // Close database
   Future close() async {
     final db = await database;
     db.close();

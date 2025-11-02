@@ -143,50 +143,7 @@ class _NoteScreenEditContentState extends State<NoteScreenEditContent> {
               ),
               style: TextStyle(color: SigmaColors.black, fontSize: 16),
             ),
-            SizedBox(height: 16),
 
-            VoiceNoteWidget(
-              duration: const Duration(minutes: 1, seconds: 24),
-              isPlaying: false,
-            ),
-            DottedDivider(),
-            Text(
-              "1. Look at me",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-            SizedBox(height: 8),
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: sampleCheckList1.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 8),
-              itemBuilder: (context, index) {
-                final item = sampleCheckList1[index];
-                return NoteCheckListItem(
-                  model: item,
-                  size: CheckListSize.normal,
-                );
-              },
-            ),
-            SizedBox(height: 12),
-            Text(
-              "2. I am a fucking star!",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-            SizedBox(height: 8),
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: sampleCheckList2.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 8),
-              itemBuilder: (context, index) {
-                final item = sampleCheckList2[index];
-                return NoteCheckListItem(
-                  model: item,
-                  size: CheckListSize.normal,
-                );
-              },
-            ),
             SizedBox(height: 100),
           ],
         ),

@@ -15,12 +15,14 @@ class NoteScreenContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 16),
+      padding: EdgeInsetsGeometry.symmetric(
+        horizontal: 16,
+        vertical: 16 + kToolbarHeight,
+      ),
       child: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: kToolbarHeight),
             Text(
               note.title.trim(),
               style: TextStyle(

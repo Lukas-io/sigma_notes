@@ -3,19 +3,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sigma_notes/core/colors.dart';
 import 'package:sigma_notes/models/note.dart';
+import 'package:sigma_notes/services/providers/note_bar_provider.dart';
+import 'package:sigma_notes/view/note/note_bottom_bar.dart';
 import 'package:sigma_notes/view/widgets/sigma_ink_well.dart';
 
 import '../../../core/assets.dart';
 
-class CommandsBar extends StatelessWidget {
+class CommandsBar extends ConsumerWidget {
   final NoteModel note;
 
   const CommandsBar(this.note, {super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final List<Widget> commands = [
       Padding(
         padding: const EdgeInsets.only(
@@ -81,6 +84,7 @@ class CommandsBar extends StatelessWidget {
     return ListView.separated(
       itemCount: commands.length,
       shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(vertical: 16.0),
 
       itemBuilder: (context, index) => commands[index],

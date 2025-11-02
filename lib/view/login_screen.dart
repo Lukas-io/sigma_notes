@@ -181,7 +181,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   onSubmitted: (_) => _handleLogin(),
                 ),
                 AnimatedSize(
-                  duration: Duration(milliseconds: 300),
+                  duration: Duration(milliseconds: 250),
                   curve: Curves.easeOut,
                   child: _errorMessage == null
                       ? SizedBox()

@@ -1,25 +1,30 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sigma_notes/models/note.dart';
 import 'package:sigma_notes/view/note/note_app_bar.dart';
 import 'package:sigma_notes/view/note/note_bottom_bar.dart';
 import 'package:sigma_notes/view/note/note_screen_content.dart';
 import 'package:sigma_notes/view/note/note_screen_edit_content.dart';
 import 'package:sigma_notes/view/widgets/sigma_ink_well.dart';
+import 'package:sigma_notes/services/providers/note_bar_provider.dart';
 
 import '../../core/colors.dart';
 
 enum NoteMode { view, edit }
 
-class NoteScreen extends StatelessWidget {
+class NoteScreen extends ConsumerWidget {
   final NoteModel note;
   final NoteMode mode;
 
-  const NoteScreen(this.note, {super.key, this.mode = NoteMode.edit});
+  const NoteScreen(this.note, {super.key, this.mode = NoteMode.view});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Watch the note bar type state
+    final barType = ref.watch(noteBarTypeStateProvider);
+
     return Scaffold(
       body: Column(
         children: [
@@ -61,7 +66,7 @@ class NoteScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                NoteAppBar(),
+                NoteAppBar(note, mode: mode),
                 // Bottom gradient
                 Positioned(
                   bottom: 0,
@@ -89,22 +94,35 @@ class NoteScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (NoteBarType.commands == true)
-                  Positioned.fill(
-                    child: SigmaInkwell(
-                      onTap: () {},
+                AnimatedSwitcher(
+                  duration: Duration(milliseconds: 300),
+                  child: barType != NoteBarType.commands
+                      ? SizedBox.shrink(key: ValueKey("empty-box"))
+                      : Positioned.fill(
+                          key: ValueKey("background-blur"),
+                          child: SigmaInkwell(
+                            onTap: () {
+                              ref
+                                  .read(noteBarTypeStateProvider.notifier)
+                                  .setBarType(
+                                    mode == NoteMode.view
+                                        ? NoteBarType.minimal
+                                        : NoteBarType.edit,
+                                  );
+                            },
 
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaY: 6, sigmaX: 6),
-                        child: Container(
-                          color: SigmaColors.black.withOpacity(0.35),
+                            child: BackdropFilter(
+                              filter: ImageFilter.blur(sigmaY: 6, sigmaX: 6),
+                              child: Container(
+                                color: SigmaColors.black.withOpacity(0.35),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
+                ),
                 Positioned(
                   bottom: 8,
-                  child: SafeArea(child: NoteBottomBar(note)),
+                  child: SafeArea(child: NoteBottomBar(note, type: barType)),
                 ),
               ],
             ),
