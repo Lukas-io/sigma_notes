@@ -3,12 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sigma_notes/core/assets.dart';
 import 'package:sigma_notes/core/colors.dart';
 import 'package:sigma_notes/models/note.dart';
-import 'package:sigma_notes/view/note/note_check_list_item.dart';
-import 'package:sigma_notes/view/note/voice_note_widget.dart';
-import 'package:sigma_notes/view/widgets/dotted_divider.dart';
 import 'package:sigma_notes/view/widgets/sigma_ink_well.dart';
-
-import '../../models/check_list_item.dart';
 
 class NoteScreenEditContent extends StatefulWidget {
   final NoteModel note;

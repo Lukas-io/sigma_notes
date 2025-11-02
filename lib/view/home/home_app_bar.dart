@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sigma_notes/core/assets.dart';
-import 'package:sigma_notes/view/widgets/collaborator_widget.dart';
 import 'package:sigma_notes/view/widgets/svg_button.dart';
 
-import '../../core/colors.dart';
 import '../../core/router/routes.dart';
 import '../widgets/sigma_image.dart';
 import '../widgets/sigma_ink_well.dart';

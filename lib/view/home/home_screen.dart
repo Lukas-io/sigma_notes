@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:animations/animations.dart';
-import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:sigma_notes/core/assets.dart';
 import 'package:sigma_notes/models/note.dart';

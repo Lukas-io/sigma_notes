@@ -6,8 +6,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sigma_notes/core/colors.dart';
 import 'package:sigma_notes/models/note.dart';
-import 'package:sigma_notes/services/providers/note_bar_provider.dart';
-import 'package:sigma_notes/view/note/note_bottom_bar.dart';
 import 'package:sigma_notes/view/widgets/sigma_ink_well.dart';
 
 import '../../../core/assets.dart';
