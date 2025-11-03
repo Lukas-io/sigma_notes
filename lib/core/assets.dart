@@ -19,6 +19,7 @@ class SigmaAssets {
   static const String frontSvg = "$svg/alt-arrow-right-broken.svg";
   static const String logoutSvg = "$svg/logout-2-broken.svg";
   static const String playSvg = "$svg/play-bold.svg";
+  static const String stopSvg = "$svg/stop-bold.svg";
   static const String pauseSvg = "$svg/pause-bold.svg";
   static const String checkMarkSvg = "$svg/unread-broken.svg";
   static const String detailsSvg = "$svg/info-square-broken.svg";
@@ -46,6 +47,7 @@ class SigmaAssets {
   static const String copyDocumentSvg = "$svg/documents-broken.svg";
   static const String commandLockSvg = "$svg/shield-keyhole-broken.svg";
   static const String deleteSvg = "$svg/trash-bin-trash-broken.svg";
+  static const String recordingDeleteSvg = "$svg/trash-bin-2-bold.svg";
   static const String xSvg = "$svg/xmark-broken.svg";
   static const String ghostSvg = "$svg/ghost-broken.svg";
   static const String standardTextSvg = "$svg/text-broken.svg";

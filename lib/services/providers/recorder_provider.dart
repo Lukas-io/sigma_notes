@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:record/record.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../models/content/audio.dart';
 import '../recorder_service.dart';
@@ -18,35 +20,43 @@ RecorderService recorderService(Ref ref) {
 /// Represents the state of an ongoing recording
 class RecorderState {
   final bool isRecording;
+  final RecordState state;
   final Duration duration;
   final String? filePath;
-  final double amplitude; // <-- Add this
+  final String? id;
+
+  final List<double> amplitude;
 
   const RecorderState({
     this.isRecording = false,
+    this.state = RecordState.stop,
     this.duration = Duration.zero,
     this.filePath,
-    this.amplitude = 0, // default 0
+    this.id,
+    this.amplitude = const [],
   });
 
   /// Creates a new state by copying existing values and overriding with provided ones
   RecorderState copyWith({
     bool? isRecording,
     Duration? duration,
+    RecordState? state,
     String? filePath,
-    double? amplitude, // <-- Add this
+    double? amp,
   }) {
+    final newAmplitude = amplitude;
+    if (amp != null) newAmplitude.add(amp);
     return RecorderState(
       isRecording: isRecording ?? this.isRecording,
       duration: duration ?? this.duration,
       filePath: filePath ?? this.filePath,
-      amplitude: amplitude ?? this.amplitude, // <-- Add this
+      state: state ?? this.state,
+      amplitude: newAmplitude,
     );
   }
 
   /// Converts the recorded file into an AudioContent model
   AudioContent toAudioContent({
-    required String id,
     required int order,
     String? createdBy,
     String? lastModifiedBy,
@@ -80,7 +90,9 @@ class Recorder extends _$Recorder {
 
   /// Start recording to the specified file path
   /// Automatically updates the duration every second
-  Future<void> startRecording(String path) async {
+  Future<void> startRecording({required String userId}) async {
+    final recordingId = Uuid().v4();
+    final path = 'recordings/$userId/$recordingId.m4a';
     final filePath = await _service.startRecording(path);
     if (filePath == null) return;
 
@@ -89,15 +101,26 @@ class Recorder extends _$Recorder {
         isRecording: true,
         duration: Duration.zero,
         filePath: filePath,
+        id: recordingId,
       ),
     );
 
     _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+
+    _service.amplitudeStream.listen((amp) {
       state.whenData((s) {
         state = AsyncValue.data(
-          s.copyWith(duration: s.duration + const Duration(seconds: 1)),
+          s.copyWith(
+            duration: s.duration + const Duration(milliseconds: 250),
+            amp: amp.current,
+          ),
         );
+      });
+    });
+
+    _service.stateStream.listen((recordState) {
+      state.whenData((s) {
+        state = AsyncValue.data(s.copyWith(state: recordState));
       });
     });
   }
@@ -111,6 +134,37 @@ class Recorder extends _$Recorder {
     );
   }
 
+  /// Pause the current recording
+  Future<void> pauseRecording() async {
+    await _service.pauseRecording(); // call service
+    _timer?.cancel(); // stop the timer while paused
+    state.whenData(
+      (s) => state = AsyncValue.data(
+        s.copyWith(isRecording: false), // not recording while paused
+      ),
+    );
+  }
+
+  /// Resume a paused recording
+  Future<void> resumeRecording() async {
+    await _service.resumeRecording(); // call service
+    // restart the timer
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      state.whenData(
+        (s) => state = AsyncValue.data(
+          s.copyWith(duration: s.duration + const Duration(seconds: 1)),
+        ),
+      );
+    });
+
+    state.whenData(
+      (s) => state = AsyncValue.data(
+        s.copyWith(isRecording: true), // mark as recording again
+      ),
+    );
+  }
+
   /// Cancel the recording and remove the file
   Future<void> cancelRecording() async {
     await _service.cancelRecording();
@@ -120,13 +174,11 @@ class Recorder extends _$Recorder {
 
   /// Convert current recording to an AudioContent model
   AudioContent? toAudioContent({
-    required String id,
     required int order,
     String? createdBy,
     String? lastModifiedBy,
   }) {
     return state.value?.toAudioContent(
-      id: id,
       order: order,
       createdBy: createdBy,
       lastModifiedBy: lastModifiedBy,

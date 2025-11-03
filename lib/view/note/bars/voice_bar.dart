@@ -1,21 +1,23 @@
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sigma_notes/view/widgets/sigma/sigma_ink_well.dart';
 import '../../../core/colors.dart';
 import '../../../core/assets.dart';
-import '../../../models/content/audio.dart';
+import '../../../services/providers/auth_provider.dart';
 import '../../../services/providers/recorder_provider.dart';
 import '../../widgets/svg_button.dart';
+import '../../widgets/voice_waveform.dart';
 
 /// A voice recording bar with animated waveform
 /// Fully integrated with Recorder Riverpod provider.
 class VoiceBar extends ConsumerStatefulWidget {
-  final Function(AudioContent)? onSave;
   final int order;
 
-  const VoiceBar({super.key, this.onSave, this.order = 0});
+  const VoiceBar({super.key, this.order = 0});
 
   @override
   ConsumerState<VoiceBar> createState() => _VoiceBarState();
@@ -54,106 +56,77 @@ class _VoiceBarState extends ConsumerState<VoiceBar>
 
   @override
   Widget build(BuildContext context) {
-    final recorderStateAsync = ref.watch(recorderProvider);
-
-    return recorderStateAsync.when(
-      data: (recorderState) {
-        final waveform = _generateWaveform(recorderState.amplitude);
-
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+    final recorder = RecorderState();
+    print(recorder.amplitude);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        spacing: 12,
+        children: [
+          VoiceWaveform(amplitudes: recorder.amplitude, waveHeight: 60),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Waveform visualization
-              SizedBox(
-                height: maxBarHeight,
-                child: AnimatedBuilder(
-                  animation: _animationController,
-                  builder: (context, _) {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: waveform
-                          .map(
-                            (h) => Container(
-                              width: 4,
-                              height: h,
-                              decoration: BoxDecoration(
-                                color: SigmaColors.primary,
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    );
-                  },
-                ),
+              // Timer
+              Text(
+                _formatDuration(recorder.duration),
+                style: const TextStyle(color: SigmaColors.gray, fontSize: 14),
               ),
-              const SizedBox(height: 12),
-              // Timer & buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Timer
-                  Text(
-                    _formatDuration(recorderState.duration),
-                    style: const TextStyle(
-                      color: SigmaColors.gray,
-                      fontSize: 14,
+              SvgButton(
+                assetPath: SigmaAssets.pauseSvg,
+                filled: false,
+                onTap: () async {
+                  await ref.read(recorderProvider.notifier).pauseRecording();
+                },
+              ),
+              SvgButton(
+                assetPath: SigmaAssets.playSvg,
+                filled: false,
+                onTap: () async {
+                  await ref.read(recorderProvider.notifier).();
+                },
+              ),
+              SvgButton(
+                assetPath: SigmaAssets.stopSvg,
+                filled: false,
+                onTap: () async {
+                  await ref.read(recorderProvider.notifier).stopRecording();
+                },
+              ),
+              SvgButton(
+                assetPath: SigmaAssets.recordingDeleteSvg,
+                filled: false,
+                iconColor: CupertinoColors.destructiveRed,
+              ),
+              SigmaInkwell(
+                onTap: () async {
+                  await ref
+                      .read(recorderProvider.notifier)
+                      .startRecording(
+                        userId:
+                            ref.read(authProvider).value?.id ?? "currentUser",
+                      );
+                },
+                child: Container(
+                  padding: EdgeInsetsGeometry.all(1.5),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: CupertinoColors.destructiveRed.withOpacity(0.4),
+                      width: 1,
                     ),
                   ),
-                  Row(
-                    children: [
-                      // Record / Stop button
-                      SvgButton(
-                        assetPath: recorderState.isRecording
-                            ? SigmaAssets.circleSvg
-                            : SigmaAssets.microphoneSvg,
-                        size: 40,
-                        onTap: () async {
-                          if (recorderState.isRecording) {
-                            await ref
-                                .read(recorderProvider.notifier)
-                                .stopRecording();
-                          } else {
-                            await ref
-                                .read(recorderProvider.notifier)
-                                .startRecording(
-                                  'recordings/${DateTime.now().millisecondsSinceEpoch}.m4a',
-                                );
-                          }
-                        },
-                      ),
-                      const SizedBox(width: 12),
-                      // Save button (only visible if recording stopped and file exists)
-                      if (!recorderState.isRecording &&
-                          recorderState.filePath != null)
-                        SvgButton(
-                          assetPath: SigmaAssets.checkMarkSvg,
-                          size: 32,
-                          onTap: () {
-                            final audioContent = ref
-                                .read(recorderProvider.notifier)
-                                .toAudioContent(
-                                  id: DateTime.now().millisecondsSinceEpoch
-                                      .toString(),
-                                  order: widget.order,
-                                );
-                            if (audioContent != null && widget.onSave != null) {
-                              widget.onSave!(audioContent);
-                            }
-                          },
-                        ),
-                    ],
+                  child: CircleAvatar(
+                    backgroundColor: CupertinoColors.destructiveRed,
+                    radius: 14,
                   ),
-                ],
+                ),
               ),
             ],
-          ).animate().fadeIn(duration: 600.ms, curve: Curves.easeOut),
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator.adaptive()),
-      error: (e, st) => Center(child: Text('Error: $e')),
+          ),
+        ],
+      ).animate().fadeIn(duration: 600.ms, curve: Curves.easeOut),
     );
   }
 
