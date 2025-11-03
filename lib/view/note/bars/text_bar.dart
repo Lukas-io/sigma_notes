@@ -4,6 +4,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/assets.dart';
 import '../../widgets/svg_button.dart';
 
+enum TextEditOptionGroup { radio, select, buttons }
+
 class TextBar extends StatelessWidget {
   const TextBar({super.key});
 
@@ -40,7 +42,7 @@ class TextBar extends StatelessWidget {
             filled: false,
           ),
         ],
-      ).animate().fadeIn(duration: 1000.ms, curve: Curves.easeOut),
+      ).animate().fadeIn(duration: 600.ms, curve: Curves.easeOut),
     );
   }
 }

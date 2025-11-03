@@ -1,56 +1,121 @@
 import 'dart:async';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../models/collaborator.dart';
 import '../../models/note.dart';
 import '../../models/content/content_model.dart';
-import '../repositories/note_repository.dart';
+import '../repositories/temp_notes_repository.dart';
 import 'note_provider.dart';
 
 part 'note_editor_provider.g.dart';
 
-/// A provider that manages note editing state and persistence for a single note.
+/// Manages note editing and persistence for a single note.
 ///
-/// This uses [AsyncNotifier] so that the note is loaded asynchronously,
-/// and then changes to the note (like content updates, adding, deleting)
-/// are tracked and saved automatically to the database.
+/// - Loads notes asynchronously via [AsyncNotifier].
+/// - Auto-saves in-progress changes to a temporary database (`temp_notes`).
+/// - Final saves go to the main notes database.
+/// - Checks for changes before saving to avoid redundant writes.
+
+/// Notes repository provider - kept alive since it's a lightweight singleton
+@Riverpod(keepAlive: true)
+TempNotesRepository tempNotesRepository(Ref ref) {
+  return TempNotesRepository();
+}
+
+/// The goal is to keep the editing experience fluid and safe:
+/// users never lose progress because temp saves happen automatically.
 @riverpod
 class NoteEditor extends _$NoteEditor {
-  NotesRepository get _repository => ref.read(notesRepositoryProvider);
+  TempNotesRepository get _tempRepository =>
+      ref.read(tempNotesRepositoryProvider);
 
   Timer? _autoSaveTimer;
   bool _isSaving = false;
 
+  // Used to detect if something actually changed since last save
+  String? _lastSavedJson;
+
   /// Builds the note editor state for a given [noteId].
   ///
-  /// It first tries to fetch the note from [NotesNotifier] (already cached notes).
-  /// If not found, it fetches directly from the database.
+  /// - Tries to load the note from cache.
+  /// - If not in cache, fetches from the temp DB first (if unsynced work exists),
+  ///   else falls back to the main repository.
   @override
   Future<NoteModel> build(String noteId) async {
-    final notesNotifier = ref.read(notesProvider.notifier);
-    final notes = await notesNotifier.loadNotesForCurrentUser();
+    final notes = await ref
+        .read(notesProvider.notifier)
+        .loadNotesForCurrentUser();
 
-    // Try to find the note in already loaded notes
+    // 1️⃣ Check if note already loaded in app memory
     final existing = notes.firstWhere(
       (note) => note.id == noteId,
       orElse: () => NoteModel(
         id: noteId,
         title: "Untitled document",
-        userId: "", // placeholder, should be replaced by real user id
+        userId: "", // placeholder
       ),
     );
 
-    // If not found in state, fetch from repository
+    // 2️⃣ If not in state, try to load from TEMP repo (unsynced draft)
     if (existing.userId.isEmpty) {
-      final fetched = await _repository.getNoteById(noteId);
-      if (fetched != null) return fetched;
+      final temp = await _tempRepository.getTempNoteById(noteId);
+      if (temp != null) {
+        _lastSavedJson = _serialize(temp);
+        return temp;
+      }
+
+      // 3️⃣ Else load from MAIN repo
+      final fetched = await ref
+          .read(notesProvider.notifier)
+          .getNoteById(noteId);
+      if (fetched != null) {
+        _lastSavedJson = _serialize(fetched);
+        return fetched;
+      }
     }
 
+    _lastSavedJson = _serialize(existing);
     return existing;
   }
 
-  /// Updates a specific content block within the note.
+  /// Updates all metadata fields of the note except for its contents.
+  void updateMetadata({
+    String? title,
+    String? thumbnail,
+    String? label,
+    bool? locked,
+    bool? isTemp,
+    bool? isPinned,
+    List<Collaborator>? collaborators,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? userId,
+  }) {
+    final current = state.value;
+    if (current == null) return;
+
+    state = AsyncData(
+      NoteModel(
+        id: current.id,
+        title: title ?? current.title,
+        thumbnail: thumbnail ?? current.thumbnail,
+        label: label ?? current.label,
+        locked: locked ?? current.locked,
+        isTemp: isTemp ?? current.isTemp,
+        isPinned: isPinned ?? current.isPinned,
+        collaborators: collaborators ?? current.collaborators,
+        createdAt: createdAt ?? current.createdAt,
+        updatedAt: updatedAt ?? current.updatedAt,
+        userId: userId ?? current.userId,
+        contents: current.contents, // keep the existing contents
+      ),
+    );
+
+    _scheduleAutoSave();
+  }
+
+  /// Updates a specific content block.
   ///
-  /// This searches for the content with the matching [contentId] and replaces it
-  /// with [updatedContent]. Then it schedules an automatic save.
+  /// This replaces a content block by [contentId] and triggers a debounced auto-save.
   void updateContent(String contentId, ContentModel updatedContent) {
     final current = state.value;
     if (current == null) return;
@@ -63,7 +128,7 @@ class NoteEditor extends _$NoteEditor {
     _scheduleAutoSave();
   }
 
-  /// Adds a new content block to the note and schedules an auto-save.
+  /// Adds a new content block and schedules auto-save.
   void addContent(ContentModel newContent) {
     final current = state.value;
     if (current == null) return;
@@ -74,7 +139,7 @@ class NoteEditor extends _$NoteEditor {
     _scheduleAutoSave();
   }
 
-  /// Deletes a content block by ID and schedules an auto-save.
+  /// Deletes a content block and schedules auto-save.
   void deleteContent(String contentId) {
     final current = state.value;
     if (current == null) return;
@@ -87,7 +152,7 @@ class NoteEditor extends _$NoteEditor {
     _scheduleAutoSave();
   }
 
-  /// Reorders the note contents (e.g., drag-and-drop reordering in the UI).
+  /// Reorders content blocks (for drag-and-drop, etc.)
   void reorderContents(List<ContentModel> newOrder) {
     final current = state.value;
     if (current == null) return;
@@ -96,31 +161,47 @@ class NoteEditor extends _$NoteEditor {
     _scheduleAutoSave();
   }
 
-  /// Schedules a delayed automatic save to minimize frequent writes.
+  /// Debounced auto-save.
   ///
-  /// A debounce-style mechanism ensures that the database save happens only
-  /// after the user pauses editing for a few seconds.
+  /// Prevents saving every keystroke by waiting for a short pause (2 seconds).
   void _scheduleAutoSave() {
     _autoSaveTimer?.cancel();
-    _autoSaveTimer = Timer(const Duration(seconds: 2), saveToDb);
+    _autoSaveTimer = Timer(const Duration(seconds: 2), _autoSaveIfChanged);
   }
 
-  /// Saves the current note to the database immediately.
+  /// Saves to the TEMP database if changes are detected.
   ///
-  /// This is used by the auto-save system or can be called manually.
-  Future<void> saveToDb() async {
-    if (_isSaving) return;
+  /// This keeps autosave lightweight while ensuring edits are safe.
+  Future<void> _autoSaveIfChanged() async {
+    final current = state.value;
+    if (current == null || _isSaving) return;
+
+    final newJson = _serialize(current);
+    if (newJson == _lastSavedJson) return; // nothing changed
+
+    _isSaving = true;
+    await _tempRepository.upsertTempNote(current);
+    _lastSavedJson = newJson;
+    _isSaving = false;
+  }
+
+  /// Manual save (e.g. user clicks “Save”).
+  ///
+  /// This flushes the temp note into the main `notes` database
+  /// and removes its temporary version.
+  Future<void> saveNow() async {
+    _autoSaveTimer?.cancel();
+
     final current = state.value;
     if (current == null) return;
 
     _isSaving = true;
-    await _repository.updateNote(current);
+    await ref.read(notesProvider.notifier).updateNote(current);
+    await _tempRepository.deleteTempNote(current.id);
+    _lastSavedJson = _serialize(current);
     _isSaving = false;
   }
 
-  /// Manually trigger a save (for "Save" button actions, etc.)
-  Future<void> saveNow() async {
-    _autoSaveTimer?.cancel();
-    await saveToDb();
-  }
+  /// Converts a note to a JSON string for quick change detection.
+  String _serialize(NoteModel note) => note.toMap().toString();
 }

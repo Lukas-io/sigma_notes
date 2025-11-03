@@ -77,6 +77,9 @@ class AttachmentContent extends ContentModel {
   String toString() =>
       'AttachmentContent(name: $name, url: $url, size: $size, mimeType: ${mimeType.name})';
 
+  @override
+  String getSearchableText() => toString();
+
   /// Detects the [MimeTypeCategory] based on the file name or URL.
   static MimeTypeCategory _detectMimeType(String name, String url) {
     final lower = (name + url).toLowerCase();

@@ -6,7 +6,7 @@ class DrawingContent extends ContentModel {
 
   DrawingContent({
     super.id,
-    required super.order,
+    super.order,
     required this.drawingData,
     super.createdAt,
     super.updatedAt,
@@ -27,7 +27,7 @@ class DrawingContent extends ContentModel {
 
   factory DrawingContent.fromJson(Map<String, dynamic> json) => DrawingContent(
     id: json['id'],
-    order: json['order'] ?? 0,
+    order: json['order'],
     drawingData: json['drawingData'] ?? '',
     createdAt: json['createdAt'] != null
         ? DateTime.parse(json['createdAt'])
@@ -44,10 +44,10 @@ class DrawingContent extends ContentModel {
     metadata: json['metadata'],
   );
 
-  DrawingContent copyWith({String? drawingData, int? order}) {
+  DrawingContent copyWith({String? drawingData}) {
     return DrawingContent(
       id: id,
-      order: order ?? this.order,
+      order: order,
       drawingData: drawingData ?? this.drawingData,
       createdAt: createdAt,
       updatedAt: DateTime.now(),

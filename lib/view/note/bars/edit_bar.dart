@@ -30,9 +30,9 @@ class EditBar extends ConsumerWidget {
             onTap: () {
               ref
                   .read(noteBarTypeStateProvider.notifier)
-                  .setBarType(NoteBarType.voice);
+                  .setBarType(NoteBarType.text);
             },
-            assetPath: SigmaAssets.soundWaveSvg,
+            assetPath: SigmaAssets.standardCheckSvg,
             filled: false,
           ),
           SvgButton(

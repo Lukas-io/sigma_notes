@@ -1,7 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../models/note.dart';
-import '../../models/user.dart';
-import '../repositories/note_repository.dart';
+
+import '../repositories/notes_repository.dart';
 import 'auth_provider.dart';
 
 part 'note_provider.g.dart';

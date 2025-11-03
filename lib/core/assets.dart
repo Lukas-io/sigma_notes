@@ -24,9 +24,10 @@ class SigmaAssets {
   static const String detailsSvg = "$svg/info-square-broken.svg";
   static const String layoutHorizontalSvg = "$svg/flip-horizontal-broken.svg";
   static const String layoutVerticalSvg = "$svg/flip-vertical-broken.svg";
-  static const String textSpeechSvg = "$svg/microphone-large-broken.svg";
+  static const String microphoneSvg = "$svg/microphone-large-outline.svg";
   static const String layoutBringFrontSvg = "$svg/layer-bring-to-front.svg";
   static const String layoutBringBackSvg = "$svg/layer-bring-to-back.svg";
+  static const String notebookSvg = "$svg/notebook-broken.svg";
   static const String standardDrawSvg = "$svg/draw-broken.svg";
   static const String standardLayoutSvg = "$svg/closet-linear.svg";
   static const String standardApplicationSvg = "$svg/code-scan-outline.svg";

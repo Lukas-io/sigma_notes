@@ -35,6 +35,9 @@ class AudioContent extends ContentModel {
     'fileSizeBytes': fileSizeBytes,
   };
 
+  @override
+  String getSearchableText() => type.name;
+
   factory AudioContent.fromJson(Map<String, dynamic> json) => AudioContent(
     id: json['id'],
     order: json['order'] ?? 0,

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sigma_notes/core/assets.dart';
 import 'package:sigma_notes/models/note.dart';
+import 'package:sigma_notes/services/providers/note_editor_provider.dart';
+import 'package:sigma_notes/services/providers/note_provider.dart';
 import 'package:sigma_notes/view/note/note_screen.dart';
 import 'package:sigma_notes/view/widgets/sigma_ink_well.dart';
 
@@ -85,6 +87,7 @@ class NoteAppBar extends ConsumerWidget {
                         .setMode(
                           mode == NoteMode.view ? NoteMode.edit : NoteMode.view,
                         );
+                    ref.read(noteEditorProvider(note.id).notifier).saveNow();
                   },
                   child: Container(
                     decoration: BoxDecoration(

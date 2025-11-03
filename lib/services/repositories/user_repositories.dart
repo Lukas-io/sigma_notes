@@ -12,7 +12,7 @@ class UserRepository {
     try {
       final db = await _dbService.database;
       final result = await db.query(
-        'users',
+        USER_DB_NAME,
         where: 'email = ?',
         whereArgs: [email],
         limit: 1,
@@ -30,7 +30,7 @@ class UserRepository {
     try {
       final db = await _dbService.database;
       final result = await db.query(
-        'users',
+        USER_DB_NAME,
         where: 'id = ?',
         whereArgs: [userId],
         limit: 1,
@@ -48,7 +48,7 @@ class UserRepository {
     try {
       final db = await _dbService.database;
       await db.insert(
-        'users',
+        USER_DB_NAME,
         user.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace, // Update if exists
       );
@@ -62,7 +62,7 @@ class UserRepository {
     try {
       final db = await _dbService.database;
       final result = await db.query(
-        'users',
+        USER_DB_NAME,
         where: 'id = ?',
         whereArgs: [userId],
         limit: 1,

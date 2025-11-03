@@ -74,7 +74,7 @@ class NoteBottomBar extends ConsumerWidget {
                 ),
               ),
               child: AnimatedSize(
-                duration: 800.ms,
+                duration: 750.ms,
                 curve: Sprung(28),
                 child: AnimatedSwitcher(
                   duration: 150.ms,

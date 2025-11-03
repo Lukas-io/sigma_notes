@@ -33,7 +33,7 @@ class MinimalBar extends ConsumerWidget {
               height: 16,
             ),
           ],
-        ).animate().fadeIn(duration: 1000.ms, curve: Curves.easeOut),
+        ).animate().fadeIn(duration: 600.ms, curve: Curves.easeOut),
       ),
     );
   }

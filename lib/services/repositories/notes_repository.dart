@@ -17,6 +17,7 @@ class NotesRepository {
       'title': note.title,
       'thumbnail': note.thumbnail,
       'label': note.label,
+      'isTemp': note.isTemp,
       'locked': note.locked ? 1 : 0,
       'isPinned': note.isPinned ? 1 : 0,
       // Serialize all content blocks
@@ -40,6 +41,7 @@ class NotesRepository {
       label: map['label'],
       locked: map['locked'] == 1,
       isPinned: map['isPinned'] == 1,
+      isTemp: map['isTemp'] == 1,
       contents: (jsonDecode(map['contents']) as List)
           .map((c) => ContentModel.fromJson(c))
           .toList(),
@@ -56,7 +58,7 @@ class NotesRepository {
   Future<List<NoteModel>> getAllNotes(String userId) async {
     final db = await _dbService.database;
     final result = await db.query(
-      'notes',
+      NOTE_DB_NAME,
       where: 'userId = ?',
       whereArgs: [userId],
       orderBy: 'isPinned DESC, updatedAt DESC',
@@ -68,7 +70,7 @@ class NotesRepository {
   Future<NoteModel?> getNoteById(String id) async {
     final db = await _dbService.database;
     final result = await db.query(
-      'notes',
+      NOTE_DB_NAME,
       where: 'id = ?',
       whereArgs: [id],
       limit: 1,
@@ -80,32 +82,32 @@ class NotesRepository {
   /// Create a new note
   Future<NoteModel?> createNote(NoteModel note) async {
     final db = await _dbService.database;
-    await db.insert('notes', _noteToSQLiteMap(note));
+    await db.insert(NOTE_DB_NAME, _noteToSQLiteMap(note));
     return await getNoteById(note.id);
   }
 
   /// Update an existing note
   Future<int> updateNote(NoteModel note) async {
     final db = await _dbService.database;
-    return await db.update(
-      'notes',
+    return await db.insert(
+      NOTE_DB_NAME,
       _noteToSQLiteMap(note),
-      where: 'id = ?',
-      whereArgs: [note.id],
+      conflictAlgorithm:
+          ConflictAlgorithm.replace, // will insert or replace existing
     );
   }
 
   /// Delete a note by ID
   Future<int> deleteNote(String id) async {
     final db = await _dbService.database;
-    return await db.delete('notes', where: 'id = ?', whereArgs: [id]);
+    return await db.delete(NOTE_DB_NAME, where: 'id = ?', whereArgs: [id]);
   }
 
   /// Count all notes for a user
   Future<int> getNotesCount(String userId) async {
     final db = await _dbService.database;
     final result = await db.rawQuery(
-      'SELECT COUNT(*) as count FROM notes WHERE userId = ?',
+      'SELECT COUNT(*) as count FROM $NOTE_DB_NAME WHERE userId = ?',
       [userId],
     );
     return Sqflite.firstIntValue(result) ?? 0;

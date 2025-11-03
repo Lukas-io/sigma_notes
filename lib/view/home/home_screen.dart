@@ -60,7 +60,10 @@ class HomeScreen extends ConsumerWidget {
             child: SafeArea(
               child: Column(
                 spacing: 16,
-                children: [HomeSearchBar(), NoteListView(sampleNotes)],
+                children: [
+                  HomeSearchBar(onChanged: (query) {}),
+                  NoteListView(),
+                ],
               ),
             ),
           ),

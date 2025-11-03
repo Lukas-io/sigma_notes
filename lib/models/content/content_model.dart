@@ -52,7 +52,7 @@ abstract class ContentModel {
   final ContentType type;
 
   /// The order/position of this block in the note
-  final int order;
+  final int? order;
 
   /// The creation timestamp of the block.
   final DateTime createdAt;
@@ -104,7 +104,7 @@ abstract class ContentModel {
   bool validate() => true;
 
   /// Extracts searchable text from the block
-  String getSearchableText() => '';
+  String getSearchableText() => type.name;
 
   /// Factory constructor that maps `type` from JSON and reconstructs
   /// the appropriate subclass.

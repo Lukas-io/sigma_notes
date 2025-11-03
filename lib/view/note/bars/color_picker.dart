@@ -12,7 +12,7 @@ class ColorPicker extends StatelessWidget {
         shape: BoxShape.circle,
         border: Border.all(color: SigmaColors.black, width: 1),
       ),
-      child: CircleAvatar(backgroundColor: Colors.blue, radius: 10),
+      child: CircleAvatar(backgroundColor: SigmaColors.black, radius: 9.5),
     );
   }
 }

@@ -12,6 +12,7 @@ class NoteModel {
   final String? thumbnail;
   final String? label;
   final bool locked;
+  final bool isTemp;
   final bool isPinned;
   final List<ContentModel> contents;
   final List<Collaborator> collaborators;
@@ -26,6 +27,7 @@ class NoteModel {
     this.label,
     this.locked = false,
     this.isPinned = false,
+    this.isTemp = false,
     this.contents = const [],
     this.collaborators = const [],
     DateTime? createdAt,
@@ -98,6 +100,7 @@ class NoteModel {
       'label': label,
       'locked': locked ? 1 : 0,
       'isPinned': isPinned ? 1 : 0,
+      'isTemp': isTemp ? 1 : 0,
       'contents': jsonEncode(contents.map((c) => c.toJson()).toList()),
       'collaborators': jsonEncode(collaborators.map((c) => c.toMap()).toList()),
       'createdAt': createdAt.toIso8601String(),
@@ -114,6 +117,7 @@ class NoteModel {
       label: map['label'],
       locked: map['locked'] == 1,
       isPinned: map['isPinned'] == 1,
+      isTemp: map['isTemp'] == 1,
       contents: (jsonDecode(map['contents']) as List)
           .map((c) => ContentModel.fromJson(c))
           .toList(),
@@ -131,6 +135,7 @@ class NoteModel {
     String? thumbnail,
     String? label,
     bool? locked,
+    bool? isTemp,
     bool? isPinned,
     List<ContentModel>? contents,
     List<Collaborator>? collaborators,
@@ -142,6 +147,7 @@ class NoteModel {
       label: label ?? this.label,
       locked: locked ?? this.locked,
       isPinned: isPinned ?? this.isPinned,
+      isTemp: isTemp ?? this.isTemp,
       contents: contents ?? this.contents,
       collaborators: collaborators ?? this.collaborators,
       createdAt: createdAt,

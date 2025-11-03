@@ -40,7 +40,7 @@ class VoiceBar extends StatelessWidget {
             filled: false,
           ),
         ],
-      ).animate().fadeIn(duration: 1000.ms, curve: Curves.easeOut),
+      ).animate().fadeIn(duration: 600.ms, curve: Curves.easeOut),
     );
   }
 }
