@@ -6,7 +6,7 @@ import 'package:sigma_notes/view/widgets/sigma_ink_well.dart';
 class SvgButton extends StatelessWidget {
   final String assetPath;
   final double size;
-  final double iconSize;
+  final double? iconSize;
   final VoidCallback? onTap;
   final Color? backgroundColor;
   final Color? iconColor;

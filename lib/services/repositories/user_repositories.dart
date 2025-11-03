@@ -1,56 +1,98 @@
-import 'package:sqflite/sqflite.dart';
+import 'dart:developer';
 
+import 'package:sqflite/sqflite.dart';
 import '../../models/user.dart';
 import '../database_service.dart';
 
 class UserRepository {
   final DatabaseService _dbService = DatabaseService.instance;
 
-  // Get user by ID (email)
+  /// Get a user by their email
+  Future<User?> getUserByEmail(String email) async {
+    try {
+      final db = await _dbService.database;
+      final result = await db.query(
+        'users',
+        where: 'email = ?',
+        whereArgs: [email],
+        limit: 1,
+      );
+      if (result.isEmpty) return null;
+      return User.fromMap(result.first);
+    } catch (e, st) {
+      log('Error getting user by email: $e\n$st');
+      return null;
+    }
+  }
+
+  /// Get a user by their ID
   Future<User?> getUserById(String userId) async {
-    final db = await _dbService.database;
-    final result = await db.query(
-      'users',
-      where: 'id = ?',
-      whereArgs: [userId],
-      limit: 1,
-    );
-    if (result.isEmpty) return null;
-    return User.fromMap(result.first);
+    try {
+      final db = await _dbService.database;
+      final result = await db.query(
+        'users',
+        where: 'id = ?',
+        whereArgs: [userId],
+        limit: 1,
+      );
+      if (result.isEmpty) return null;
+      return User.fromMap(result.first);
+    } catch (e, st) {
+      log('Error getting user by ID: $e\n$st');
+      return null;
+    }
   }
 
-  // Create or update user
+  /// Create a new user or update an existing one
   Future<void> saveUser(User user) async {
-    final db = await _dbService.database;
-    await db.insert(
-      'users',
-      user.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace, // Update if exists
-    );
+    try {
+      final db = await _dbService.database;
+      await db.insert(
+        'users',
+        user.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace, // Update if exists
+      );
+    } catch (e, st) {
+      log('Error saving user: $e\n$st');
+    }
   }
 
-  // Check if user exists
+  /// Check if a user exists
   Future<bool> userExists(String userId) async {
-    final db = await _dbService.database;
-    final result = await db.query(
-      'users',
-      where: 'id = ?',
-      whereArgs: [userId],
-      limit: 1,
-    );
-    return result.isNotEmpty;
+    try {
+      final db = await _dbService.database;
+      final result = await db.query(
+        'users',
+        where: 'id = ?',
+        whereArgs: [userId],
+        limit: 1,
+      );
+      return result.isNotEmpty;
+    } catch (e, st) {
+      log('Error checking if user exists: $e\n$st');
+      return false;
+    }
   }
 
-  // Get all users (for debugging)
+  /// Get all users (for debugging)
   Future<List<User>> getAllUsers() async {
-    final db = await _dbService.database;
-    final result = await db.query('users');
-    return result.map((map) => User.fromMap(map)).toList();
+    try {
+      final db = await _dbService.database;
+      final result = await db.query('users');
+      return result.map((map) => User.fromMap(map)).toList();
+    } catch (e, st) {
+      log('Error getting all users: $e\n$st');
+      return [];
+    }
   }
 
-  // Delete user and their notes (CASCADE will handle notes)
+  /// Delete a user (CASCADE handles their notes)
   Future<void> deleteUser(String userId) async {
-    final db = await _dbService.database;
-    await db.delete('users', where: 'id = ?', whereArgs: [userId]);
+    try {
+      final db = await _dbService.database;
+      await db.delete('users', where: 'id = ?', whereArgs: [userId]);
+    } catch (e, st) {
+      log('Error deleting user: $e\n$st');
+    }
   }
 }

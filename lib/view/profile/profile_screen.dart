@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sigma_notes/view/profile/device_info_widget.dart';
 import 'package:sigma_notes/view/profile/profile_app_bar.dart';
@@ -22,7 +23,7 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Watch the auth provider for user data
-    final userAsync = ref.watch(authProvider);
+    final userAsync = ref.read(authProvider);
 
     return Scaffold(
       body: Stack(
@@ -36,13 +37,51 @@ class ProfileScreen extends ConsumerWidget {
             child: SafeArea(
               child: Column(
                 children: [
-                  SigmaImage(
-                    assetPath: SigmaAssets.avatar1,
-                    fit: BoxFit.cover,
-                    height: 150,
-                    width: 150,
-                    borderRadius: BorderRadius.circular(360),
+                  userAsync.when(
+                    data: (user) {
+                      if (user != null) {
+                        return SigmaImage(
+                          assetPath: user.profilePicture,
+                          fit: BoxFit.cover,
+                          height: 150,
+                          width: 150,
+                          borderRadius: BorderRadius.circular(360),
+                        );
+                      }
+                      return SigmaImage(
+                        assetPath: SigmaAssets.avatar1,
+                        fit: BoxFit.cover,
+                        height: 150,
+                        width: 150,
+                        borderRadius: BorderRadius.circular(360),
+                      );
+                    },
+                    loading: () =>
+                        Container(
+                              height: 150,
+                              width: 150,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(360),
+                                color: SigmaColors.card,
+                              ),
+                            )
+                            .animate(
+                              onPlay: (controller) => controller.repeat(),
+                            )
+                            .shimmer(
+                              duration: 1600.ms,
+                              delay: 400.ms,
+                              curve: Curves.easeInOut,
+                            ),
+                    error: (error, stack) => SigmaImage(
+                      assetPath: SigmaAssets.avatar1,
+                      fit: BoxFit.cover,
+                      height: 150,
+                      width: 150,
+                      borderRadius: BorderRadius.circular(360),
+                    ),
                   ),
+
                   SizedBox(height: 12),
                   // Display username or email
                   userAsync.when(
@@ -66,13 +105,23 @@ class ProfileScreen extends ConsumerWidget {
                         ),
                       );
                     },
-                    loading: () => Text(
-                      "Loading...",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 20,
-                      ),
-                    ),
+                    loading: () =>
+                        Text(
+                              "Loading...",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 20,
+                              ),
+                            )
+                            .animate(
+                              onPlay: (controller) => controller.repeat(),
+                            )
+                            .shimmer(
+                              duration: 1600.ms,
+                              color: SigmaColors.gray,
+                              delay: 400.ms,
+                              curve: Curves.easeInOut,
+                            ),
                     error: (error, stack) => Text(
                       "Error loading user",
                       style: TextStyle(

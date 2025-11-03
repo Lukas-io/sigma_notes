@@ -1,5 +1,4 @@
 import 'content_model.dart';
-import 'content_type.dart';
 
 /// Represents an audio recording or file.
 class AudioContent extends ContentModel {

@@ -1,5 +1,4 @@
 import 'content_model.dart';
-import 'content_type.dart';
 
 /// Represents a link to another note or a specific block within a note.
 class LinkContent extends ContentModel {

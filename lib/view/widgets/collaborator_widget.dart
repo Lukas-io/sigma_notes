@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:sigma_notes/models/collaborator.dart';
 import 'package:sigma_notes/view/widgets/sigma_image.dart';
 import 'package:sigma_notes/core/assets.dart';
 import 'package:sprung/sprung.dart';
 
 class CollaboratorWidget extends StatelessWidget {
+  final List<Collaborator> collaborators;
   final double size;
 
-  const CollaboratorWidget({super.key, this.size = 20});
+  const CollaboratorWidget({
+    super.key,
+    this.size = 20,
+    this.collaborators = const [],
+  });
 
   @override
   Widget build(BuildContext context) {

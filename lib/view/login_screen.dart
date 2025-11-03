@@ -9,6 +9,7 @@ import 'package:sigma_notes/core/assets.dart';
 import 'package:sigma_notes/core/router/routes.dart';
 import 'package:sigma_notes/services/providers/auth_provider.dart';
 import 'package:sigma_notes/view/widgets/sigma_button.dart';
+import 'package:sigma_notes/view/widgets/sigma_ink_well.dart';
 import 'package:sigma_notes/view/widgets/sigma_textfield.dart';
 
 import '../core/colors.dart';
@@ -127,13 +128,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Watch auth state to navigate if already logged in
-    ref.listen<AsyncValue>(authProvider, (previous, next) {
-      if (next.hasValue && next.value != null && mounted) {
-        context.go(SigmaRoutes.home);
-      }
-    });
-
     return Scaffold(
       body: SingleChildScrollView(
         padding: const EdgeInsets.only(top: 72, right: 16, left: 16),
@@ -196,32 +190,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 SizedBox(height: 24),
                 SigmaButton(
                   onPressed: _isLoading ? null : _handleLogin,
-                  child: _isLoading
-                      ? SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
-                            ),
-                          ),
-                        )
-                      : Text(
-                          "Start your Journey",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 18,
-                          ),
-                        ),
+                  isLoading: _isLoading,
+                  child: Text(
+                    "Start your Journey",
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+                  ),
                 ),
                 SizedBox(height: 8),
-                InkWell(
+                SigmaInkwell(
                   onTap: _isLoading ? null : _handleGuestLogin,
-                  borderRadius: SmoothBorderRadius(
-                    cornerRadius: 12,
-                    cornerSmoothing: 1,
-                  ),
+
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                       vertical: 8.0,

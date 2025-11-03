@@ -14,7 +14,7 @@ import 'package:sigma_notes/view/widgets/svg_button.dart';
 import 'package:animations/animations.dart';
 
 import '../../services/providers/biometrics_provider.dart';
-import '../note/note_check_list_item.dart';
+import '../note/content/checklist_content_widget.dart';
 
 class NotePreviewWidget extends ConsumerStatefulWidget {
   final NoteModel note;
@@ -32,7 +32,7 @@ class _NotePreviewWidgetState extends ConsumerState<NotePreviewWidget> {
     return OpenContainer(
       transitionDuration: Duration(milliseconds: 300),
       transitionType: ContainerTransitionType.fadeThrough,
-      openBuilder: (context, _) => NoteScreen(note),
+      openBuilder: (context, _) => NoteScreen(note, mode: NoteMode.view),
       closedElevation: 1,
       openShape: const SmoothRectangleBorder(
         borderRadius: SmoothBorderRadius.all(
@@ -129,18 +129,18 @@ class NotePreviewContent extends StatelessWidget {
     return Column(
       children: [
         Container(
-          decoration: note.imagePath == null
+          decoration: note.thumbnail == null
               ? null
               : BoxDecoration(
                   image: DecorationImage(
-                    image: Image.asset(note.imagePath!).image,
+                    image: Image.asset(note.thumbnail!).image,
                     fit: BoxFit.cover,
                     opacity: 0.2,
                   ),
                 ),
-          height: note.imagePath == null ? null : 120,
+          height: note.thumbnail == null ? null : 120,
           alignment: Alignment.topCenter,
-          child: !(note.collaborators || note.isPinned)
+          child: !(note.collaborators.isNotEmpty || note.isPinned)
               ? SizedBox(height: 4)
               : Padding(
                   padding: const EdgeInsets.only(
@@ -156,7 +156,7 @@ class NotePreviewContent extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.start,
 
                           children: [
-                            if (note.collaborators)
+                            if (note.collaborators.isNotEmpty)
                               Expanded(child: CollaboratorWidget()),
                             Padding(
                               padding: const EdgeInsets.symmetric(
@@ -205,7 +205,7 @@ class NotePreviewContent extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (!(note.isPinned || note.collaborators))
+                  if (!(note.isPinned || note.collaborators.isNotEmpty))
                     Transform.translate(
                       offset: Offset(8, 0),
 
@@ -222,16 +222,16 @@ class NotePreviewContent extends StatelessWidget {
                 ],
               ),
               SizedBox(height: 4),
-              Text(
-                note.content,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: SigmaColors.gray,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              // Text(
+              //   note.content,
+              //   maxLines: 3,
+              //   overflow: TextOverflow.ellipsis,
+              //   style: TextStyle(
+              //     color: SigmaColors.gray,
+              //     fontSize: 12,
+              //     fontWeight: FontWeight.w500,
+              //   ),
+              // ),
               NoteCheckList(note),
               Text(".....", style: TextStyle(height: 1)),
               NotePreviewChips(note),
@@ -263,9 +263,9 @@ class NoteCheckList extends StatelessWidget {
       padding: const EdgeInsets.only(top: 8.0),
       child: Column(
         spacing: 4,
-        children: note.checkList
-            .map((model) => NoteCheckListItem(model: model))
-            .toList(),
+        // children: note.checkList
+        //     .map((model) => NoteCheckListItem(model: model))
+        //     .toList(),
       ),
     );
   }

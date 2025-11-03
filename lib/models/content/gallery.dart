@@ -1,5 +1,4 @@
 import 'content_model.dart';
-import 'content_type.dart';
 
 /// Represents a gallery of multiple images.
 class GalleryContent extends ContentModel {

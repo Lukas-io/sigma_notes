@@ -3,28 +3,41 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sigma_notes/models/note.dart';
+import 'package:sigma_notes/services/providers/note_mode_provider.dart';
 import 'package:sigma_notes/view/note/note_app_bar.dart';
 import 'package:sigma_notes/view/note/note_bottom_bar.dart';
 import 'package:sigma_notes/view/note/note_screen_content.dart';
-import 'package:sigma_notes/view/note/note_screen_edit_content.dart';
-import 'package:sigma_notes/view/widgets/sigma_ink_well.dart';
 import 'package:sigma_notes/services/providers/note_bar_provider.dart';
 
 import '../../core/colors.dart';
 
 enum NoteMode { view, edit }
 
-class NoteScreen extends ConsumerWidget {
+class NoteScreen extends ConsumerStatefulWidget {
   final NoteModel note;
   final NoteMode mode;
 
   const NoteScreen(this.note, {super.key, this.mode = NoteMode.view});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<NoteScreen> createState() => _NoteScreenState();
+}
+
+class _NoteScreenState extends ConsumerState<NoteScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    // Schedule after first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(noteModeStateProvider.notifier).setMode(widget.mode);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     // Watch the note bar type state
     final barType = ref.watch(noteBarTypeStateProvider);
-
     return Scaffold(
       body: Column(
         children: [
@@ -32,8 +45,7 @@ class NoteScreen extends ConsumerWidget {
             child: Stack(
               alignment: AlignmentGeometry.topCenter,
               children: [
-                if (mode == NoteMode.view) NoteScreenContent(note),
-                if (mode == NoteMode.edit) NoteScreenEditContent(note),
+                NoteScreenContent(widget.note),
 
                 // Top gradient
                 Positioned(
@@ -66,7 +78,7 @@ class NoteScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                NoteAppBar(note, mode: mode),
+                NoteAppBar(widget.note),
                 // Bottom gradient
                 Positioned(
                   bottom: 0,
@@ -94,35 +106,37 @@ class NoteScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                AnimatedSwitcher(
-                  duration: Duration(milliseconds: 300),
-                  child: barType != NoteBarType.commands
-                      ? SizedBox.shrink(key: ValueKey("empty-box"))
-                      : Positioned.fill(
-                          key: ValueKey("background-blur"),
-                          child: SigmaInkwell(
-                            onTap: () {
-                              ref
-                                  .read(noteBarTypeStateProvider.notifier)
-                                  .setBarType(
-                                    mode == NoteMode.view
-                                        ? NoteBarType.minimal
-                                        : NoteBarType.edit,
-                                  );
-                            },
+                Positioned.fill(
+                  child: IgnorePointer(
+                    ignoring: barType != NoteBarType.commands,
 
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(sigmaY: 6, sigmaX: 6),
-                              child: Container(
-                                color: SigmaColors.black.withOpacity(0.35),
-                              ),
-                            ),
+                    child: AnimatedOpacity(
+                      duration: Duration(milliseconds: 300),
+                      opacity: barType != NoteBarType.commands ? 0.0 : 1,
+                      curve: Curves.easeOut,
+                      child: GestureDetector(
+                        onTap: () {
+                          ref
+                              .read(noteBarTypeStateProvider.notifier)
+                              .setBarType(
+                                ref.read(noteModeStateProvider) == NoteMode.view
+                                    ? NoteBarType.minimal
+                                    : NoteBarType.edit,
+                              );
+                        },
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaY: 6, sigmaX: 6),
+                          child: Container(
+                            color: SigmaColors.black.withOpacity(0.35),
                           ),
                         ),
+                      ),
+                    ),
+                  ),
                 ),
                 Positioned(
                   bottom: 8,
-                  child: SafeArea(child: NoteBottomBar(note, type: barType)),
+                  child: SafeArea(child: NoteBottomBar(widget.note)),
                 ),
               ],
             ),

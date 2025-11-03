@@ -1,5 +1,4 @@
 import 'content_model.dart';
-import 'content_type.dart';
 
 /// Represents an image block with optional caption.
 class ImageContent extends ContentModel {
@@ -27,35 +26,37 @@ class ImageContent extends ContentModel {
   }) : super(type: ContentType.image);
 
   @override
-  Map<String, dynamic> toJson() => {
-    ...baseToJson(),
-    'url': url,
-    'caption': caption,
-    'width': width,
-    'height': height,
-  };
+  Map<String, dynamic> toJson() =>
+      {
+        ...baseToJson(),
+        'url': url,
+        'caption': caption,
+        'width': width,
+        'height': height,
+      };
 
-  factory ImageContent.fromJson(Map<String, dynamic> json) => ImageContent(
-    id: json['id'],
-    order: json['order'] ?? 0,
-    url: json['url'] ?? '',
-    caption: json['caption'],
-    width: json['width'],
-    height: json['height'],
-    createdAt: json['createdAt'] != null
-        ? DateTime.parse(json['createdAt'])
-        : null,
-    updatedAt: json['updatedAt'] != null
-        ? DateTime.parse(json['updatedAt'])
-        : null,
-    createdBy: json['createdBy'],
-    lastModifiedBy: json['lastModifiedBy'],
-    isCollapsed: json['isCollapsed'] ?? false,
-    backgroundColor: json['backgroundColor'],
-    indentLevel: json['indentLevel'] ?? 0,
-    parentBlockId: json['parentBlockId'],
-    metadata: json['metadata'],
-  );
+  factory ImageContent.fromJson(Map<String, dynamic> json) =>
+      ImageContent(
+        id: json['id'],
+        order: json['order'] ?? 0,
+        url: json['url'] ?? '',
+        caption: json['caption'],
+        width: json['width'],
+        height: json['height'],
+        createdAt: json['createdAt'] != null
+            ? DateTime.parse(json['createdAt'])
+            : null,
+        updatedAt: json['updatedAt'] != null
+            ? DateTime.parse(json['updatedAt'])
+            : null,
+        createdBy: json['createdBy'],
+        lastModifiedBy: json['lastModifiedBy'],
+        isCollapsed: json['isCollapsed'] ?? false,
+        backgroundColor: json['backgroundColor'],
+        indentLevel: json['indentLevel'] ?? 0,
+        parentBlockId: json['parentBlockId'],
+        metadata: json['metadata'],
+      );
 
   @override
   bool validate() => url.isNotEmpty && Uri.tryParse(url) != null;

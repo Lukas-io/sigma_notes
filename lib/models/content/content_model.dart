@@ -19,6 +19,26 @@ import 'timer.dart';
 import 'video.dart';
 import 'attachment.dart';
 
+export 'audio.dart';
+export 'checklist.dart';
+export 'code.dart';
+export 'content_type.dart';
+export 'divider.dart';
+export 'drawing.dart';
+export 'embed.dart';
+export 'gallery.dart';
+export 'image.dart';
+export 'link.dart';
+export 'location.dart';
+export 'quote.dart';
+export 'table.dart';
+export 'tag.dart';
+export 'text.dart';
+export 'timer.dart';
+export 'video.dart';
+export 'attachment.dart';
+export '../funny_hints.dart';
+
 /// The base type for all content blocks that can appear in a note.
 ///
 /// Each block (text, image, audio, checklist, etc.) extends [ContentModel]

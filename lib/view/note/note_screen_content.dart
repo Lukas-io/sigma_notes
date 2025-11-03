@@ -1,95 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:sigma_notes/core/colors.dart';
 import 'package:sigma_notes/models/note.dart';
-import 'package:sigma_notes/view/note/note_check_list_item.dart';
-import 'package:sigma_notes/view/note/voice_note_widget.dart';
-import 'package:sigma_notes/view/widgets/dotted_divider.dart';
+import 'package:sigma_notes/view/note/content/content_widget.dart';
+import 'package:sigma_notes/view/note/content/title_widget.dart';
+import 'package:sigma_notes/view/note/content/checklist_content_widget.dart';
+import 'package:sigma_notes/view/note/note_screen.dart';
+import 'package:sigma_notes/view/note/content/audio_content_widget.dart';
+import 'package:sigma_notes/view/widgets/divider/dotted_divider.dart';
 
-import '../../models/check_list_item.dart';
+import 'content/label_widget.dart';
 
-class NoteScreenContent extends StatelessWidget {
+class NoteScreenContent extends StatefulWidget {
   final NoteModel note;
+  final NoteMode mode;
 
-  const NoteScreenContent(this.note, {super.key});
+  const NoteScreenContent(this.note, {super.key, this.mode = NoteMode.view});
 
   @override
+  State<NoteScreenContent> createState() => _NoteScreenContentState();
+}
+
+class _NoteScreenContentState extends State<NoteScreenContent> {
+  @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: EdgeInsetsGeometry.symmetric(
-        horizontal: 16,
-        vertical: 16 + kToolbarHeight,
-      ),
-      child: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              note.title.trim(),
-              style: TextStyle(
-                color: SigmaColors.black,
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-                height: 1.3,
-              ),
-            ),
-            SizedBox(height: 4),
-            Text(
-              "${note.label} ｜ ${note.formattedDateDayTime}",
-              style: TextStyle(
-                color: SigmaColors.gray,
-                fontSize: 12,
-                height: 1.3,
-              ),
-            ),
-            SizedBox(height: 20),
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+        print("unfocus");
+      },
+      child: SingleChildScrollView(
+        padding: EdgeInsetsGeometry.symmetric(
+          horizontal: 16,
+          vertical: 16 + kToolbarHeight,
+        ),
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              TitleWidget(widget.note.title.trim()),
 
-            SelectableText(note.content.trim(), style: TextStyle(fontSize: 16)),
-            SizedBox(height: 16),
+              LabelWidget(
+                label: widget.note.label,
+                updatedDate: widget.note.formattedDateDayTime,
+              ),
 
-            VoiceNoteWidget(
-              duration: const Duration(minutes: 1, seconds: 24),
-              isPlaying: false,
-            ),
-            DottedDivider(),
-            Text(
-              "1. Look at me",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-            SizedBox(height: 8),
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: sampleCheckList1.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 8),
-              itemBuilder: (context, index) {
-                final item = sampleCheckList1[index];
-                return NoteCheckListItem(
-                  model: item,
-                  size: CheckListSize.normal,
-                );
-              },
-            ),
-            SizedBox(height: 12),
-            Text(
-              "2. I am a fucking star!",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-            SizedBox(height: 8),
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: sampleCheckList2.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 8),
-              itemBuilder: (context, index) {
-                final item = sampleCheckList2[index];
-                return NoteCheckListItem(
-                  model: item,
-                  size: CheckListSize.normal,
-                );
-              },
-            ),
-            SizedBox(height: 100),
-          ],
+              SizedBox(height: 20),
+              ...widget.note.contents.map(
+                (content) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: ContentWidget(content: content),
+                ),
+              ),
+              SizedBox(height: 250),
+            ],
+          ),
         ),
       ),
     );

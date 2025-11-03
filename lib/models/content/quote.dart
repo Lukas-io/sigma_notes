@@ -1,5 +1,4 @@
 import 'content_model.dart';
-import 'content_type.dart';
 
 /// Represents a quote or citation block.
 class QuoteContent extends ContentModel {

@@ -1,7 +1,6 @@
 import 'package:uuid/uuid.dart';
 
 import 'content_model.dart';
-import 'content_type.dart';
 
 /// Represents a checklist block with multiple items.
 class ChecklistContent extends ContentModel {

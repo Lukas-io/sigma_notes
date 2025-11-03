@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../core/utils/username_generator.dart';
 import '../../models/user.dart';
@@ -65,7 +68,7 @@ class Auth extends _$Auth {
 
       // Check if user exists in database
       final userRepo = ref.read(userRepositoryProvider);
-      User? user = await userRepo.getUserById(email);
+      User? user = await userRepo.getUserByEmail(email);
 
       // If user doesn't exist, create new user
       if (user == null) {
@@ -87,7 +90,7 @@ class Auth extends _$Auth {
       state = AsyncValue.data(user);
 
       // Load notes for this user
-      ref.read(notesProvider.notifier).loadNotesForUser(user.id);
+      await ref.read(notesProvider.notifier).loadNotesForCurrentUser();
 
       return true;
     } catch (e, stack) {
@@ -102,11 +105,13 @@ class Auth extends _$Auth {
 
     try {
       final userRepo = ref.read(userRepositoryProvider);
+      final id = Uuid().v4();
 
       // Create guest user
       final guestUser = User(
-        email: 'guest_${DateTime.now().millisecondsSinceEpoch}@guest.local',
-        username: 'Guest${UsernameGenerator.generateUsername()}',
+        id: id,
+        email: '$id@guest.local',
+        username: UsernameGenerator.generateUsername(),
         profilePicture: UsernameGenerator.generateAvatar(),
         isGuest: true,
       );
@@ -117,12 +122,11 @@ class Auth extends _$Auth {
       final storage = ref.read(secureStorageProvider);
       await storage.write(key: _tokenKey, value: 'guest_token_${guestUser.id}');
       await storage.write(key: _userIdKey, value: guestUser.id);
-
       // Update state
       state = AsyncValue.data(guestUser);
 
       // Load notes for guest
-      ref.read(notesProvider.notifier).loadNotesForUser(guestUser.id);
+      await ref.read(notesProvider.notifier).loadNotesForCurrentUser();
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }

@@ -1,6 +1,5 @@
 import 'package:uuid/uuid.dart';
 import 'content_model.dart';
-import 'content_type.dart';
 
 /// Defines broad categories of MIME types for attachments.
 enum MimeTypeCategory { image, video, audio, document, archive, other }

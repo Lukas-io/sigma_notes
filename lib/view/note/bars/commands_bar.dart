@@ -31,7 +31,7 @@ class CommandsBar extends ConsumerWidget {
             Expanded(
               child: CommandsRowButton(
                 title: 'Image',
-                assetPath: SigmaAssets.soundWaveSvg,
+                assetPath: SigmaAssets.commandImageSvg,
               ),
             ),
             Expanded(
@@ -43,30 +43,44 @@ class CommandsBar extends ConsumerWidget {
             Expanded(
               child: CommandsRowButton(
                 title: 'Share',
-                assetPath: SigmaAssets.soundWaveSvg,
+                assetPath: SigmaAssets.commandShareSvg,
               ),
             ),
           ],
         ),
       ),
-      CommandsListItem(title: 'Pin', leading: SigmaAssets.pinSvg),
-      CommandsListItem(title: 'Add thumbnail', leading: SigmaAssets.pinSvg),
+      CommandsListItem(
+        title: note.isPinned ? 'Pinned' : 'Pin',
+        leading: SigmaAssets.pinSvg,
+      ),
+      CommandsListItem(
+        title: note.thumbnail != null ? 'Update thumbnail' : 'Add thumbnail',
+        leading: SigmaAssets.commandThumbnailSvg,
+      ),
       CommandsListItem(
         title: 'Label',
-        leading: SigmaAssets.pinSvg,
-        disclosureLabel: "Work",
+        leading: SigmaAssets.labelSvg,
+        disclosureLabel: note.label != null || (note.label ?? "").isNotEmpty
+            ? note.label!
+            : "",
         isDisclosure: true,
       ),
       CommandsListItem(
         title: 'Send',
-        leading: SigmaAssets.pinSvg,
+        leading: SigmaAssets.sendSvg,
         isDisclosure: true,
       ),
-      CommandsListItem(title: 'Make a copy', leading: SigmaAssets.pinSvg),
-      CommandsListItem(title: 'Lock note', leading: SigmaAssets.pinSvg),
+      CommandsListItem(
+        title: 'Make a copy',
+        leading: SigmaAssets.copyDocumentSvg,
+      ),
+      CommandsListItem(
+        title: note.locked ? "Remove lock" : "Lock note",
+        leading: SigmaAssets.commandLockSvg,
+      ),
       CommandsListItem(
         title: 'Delete note',
-        leading: SigmaAssets.pinSvg,
+        leading: SigmaAssets.deleteSvg,
         isDestructive: true,
       ),
       Padding(

@@ -1,5 +1,4 @@
 import 'content_model.dart';
-import 'content_type.dart';
 
 /// Defines available visual styles for a divider block.
 enum DividerStyle {

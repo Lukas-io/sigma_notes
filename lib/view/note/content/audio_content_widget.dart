@@ -2,17 +2,13 @@ import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:sigma_notes/core/assets.dart';
 import 'package:sigma_notes/core/colors.dart';
+import 'package:sigma_notes/models/content/audio.dart';
 import 'package:sigma_notes/view/widgets/svg_button.dart';
 
-class VoiceNoteWidget extends StatelessWidget {
-  final Duration duration;
-  final bool isPlaying;
+class AudioContentWidget extends StatelessWidget {
+  final AudioContent content;
 
-  const VoiceNoteWidget({
-    super.key,
-    required this.duration,
-    this.isPlaying = false,
-  });
+  const AudioContentWidget(this.content, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +38,7 @@ class VoiceNoteWidget extends StatelessWidget {
 
           // Duration text
           Text(
-            _formatDuration(duration),
+            _formatDuration(content.duration ?? Duration()),
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,

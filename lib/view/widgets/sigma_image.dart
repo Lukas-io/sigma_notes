@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:sigma_notes/core/colors.dart';
 
 class SigmaImage extends StatelessWidget {
   final String? assetPath; // for asset image
@@ -73,6 +74,13 @@ class SigmaImage extends StatelessWidget {
                 colorBlendMode: colorBlendMode,
                 filterQuality: filterQuality,
                 gaplessPlayback: gaplessPlayback,
+                errorBuilder: (_, __, ___) {
+                  return Container(
+                    height: height,
+                    width: width,
+                    color: SigmaColors.card,
+                  );
+                },
               );
             } else {
               throw Exception('No image source provided');

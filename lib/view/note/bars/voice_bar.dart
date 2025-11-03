@@ -1,13 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:sigma_notes/view/note/bars/color_picker.dart';
 
 import '../../../core/assets.dart';
 import '../../widgets/svg_button.dart';
 
-class LayoutBar extends StatelessWidget {
-  const LayoutBar({super.key});
+class VoiceBar extends StatelessWidget {
+  const VoiceBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,32 +14,30 @@ class LayoutBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          ColorPicker(),
           SvgButton(
             onTap: () {},
-            assetPath: SigmaAssets.layoutHorizontalSvg, //horizontal
+            assetPath: SigmaAssets.detailsSvg,
             filled: false,
           ),
           SvgButton(
             onTap: () {},
-            assetPath: SigmaAssets.layoutVerticalSvg, //vertical
+            assetPath: SigmaAssets.detailsSvg,
             filled: false,
           ),
           SvgButton(
             onTap: () {},
-            assetPath: SigmaAssets.layoutBringFrontSvg, // bring top
+            assetPath: SigmaAssets.detailsSvg,
             filled: false,
           ),
           SvgButton(
             onTap: () {},
-            assetPath: SigmaAssets.layoutBringBackSvg, // bring bottom
+            assetPath: SigmaAssets.detailsSvg,
             filled: false,
           ),
           SvgButton(
             onTap: () {},
-            assetPath: SigmaAssets.deleteSvg, // delete
+            assetPath: SigmaAssets.detailsSvg,
             filled: false,
-            iconColor: CupertinoColors.destructiveRed,
           ),
         ],
       ).animate().fadeIn(duration: 1000.ms, curve: Curves.easeOut),

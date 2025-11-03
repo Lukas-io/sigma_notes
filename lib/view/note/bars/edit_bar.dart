@@ -19,35 +19,45 @@ class EditBar extends ConsumerWidget {
         children: [
           SvgButton(
             onTap: () {
-              ref.read(noteBarTypeStateProvider.notifier).setBarType(NoteBarType.draw);
+              ref
+                  .read(noteBarTypeStateProvider.notifier)
+                  .setBarType(NoteBarType.draw);
             },
             assetPath: SigmaAssets.standardDrawSvg,
             filled: false,
           ),
           SvgButton(
             onTap: () {
-              ref.read(noteBarTypeStateProvider.notifier).setBarType(NoteBarType.text);
+              ref
+                  .read(noteBarTypeStateProvider.notifier)
+                  .setBarType(NoteBarType.voice);
             },
-            assetPath: SigmaAssets.standardCheckSvg,
+            assetPath: SigmaAssets.soundWaveSvg,
             filled: false,
           ),
           SvgButton(
             onTap: () {
-              ref.read(noteBarTypeStateProvider.notifier).setBarType(NoteBarType.layout);
+              ref
+                  .read(noteBarTypeStateProvider.notifier)
+                  .setBarType(NoteBarType.layout);
             },
             assetPath: SigmaAssets.standardLayoutSvg,
             filled: false,
           ),
           SvgButton(
             onTap: () {
-              ref.read(noteBarTypeStateProvider.notifier).setBarType(NoteBarType.text);
+              ref
+                  .read(noteBarTypeStateProvider.notifier)
+                  .setBarType(NoteBarType.text);
             },
             assetPath: SigmaAssets.standardTextSvg,
             filled: false,
           ),
           SvgButton(
             onTap: () {
-              ref.read(noteBarTypeStateProvider.notifier).setBarType(NoteBarType.commands);
+              ref
+                  .read(noteBarTypeStateProvider.notifier)
+                  .setBarType(NoteBarType.commands);
             },
             assetPath: SigmaAssets.standardCommandSvg,
             filled: false,
