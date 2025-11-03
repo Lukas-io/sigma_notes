@@ -54,7 +54,7 @@ class NoteModel {
   // Helper to get all text content for search
   String get searchableText {
     final contentText = contents.map((c) => c.getSearchableText()).join(' ');
-    return '$title $contentText';
+    return '$title $label $contentText';
   }
 
   // Check if note has any checklist

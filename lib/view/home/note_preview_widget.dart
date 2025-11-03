@@ -53,6 +53,9 @@ class _NotePreviewWidgetState extends ConsumerState<NotePreviewWidget> {
       closedColor: SigmaColors.white,
       closedBuilder: (context, openContainer) {
         return GestureDetector(
+          onLongPress: () {
+            NoteDetailsBottomSheet.show(context, note);
+          },
           onTap: () async {
             if (note.locked) {
               // Read LocalAuthentication directly - it's keepAlive so won't dispose

@@ -96,6 +96,7 @@ class _HomeSearchBarState extends ConsumerState<HomeSearchBar> {
                     key: const ValueKey('clear'),
                     onTap: () {
                       _controller.clear();
+                      ref.read(searchQueryProvider.notifier).setQuery("");
                       widget.onClear?.call();
                     },
                     behavior: HitTestBehavior.opaque,

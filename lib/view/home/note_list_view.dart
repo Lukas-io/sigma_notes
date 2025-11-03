@@ -41,9 +41,11 @@ class NoteListView extends ConsumerWidget {
 
         return notesAsync.when(
           data: (unfilterNotes) {
-            final notes = unfilterNotes
-                .where((note) => note.searchableText.contains(query))
-                .toList();
+            final notes = unfilterNotes.where((note) {
+              final text = note.searchableText.toLowerCase();
+              final q = query.toLowerCase().trim();
+              return text.contains(q);
+            }).toList();
             // Handle empty state
             if (unfilterNotes.isEmpty) {
               return SigmaInkwell(
@@ -82,6 +84,35 @@ class NoteListView extends ConsumerWidget {
                       ),
                     ],
                   ),
+                ),
+              );
+            }
+
+            if (notes.isEmpty) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 100.0,
+                  horizontal: 36,
+                ),
+                child: Column(
+                  children: [
+                    SvgPicture.asset(
+                      SigmaAssets.searchSvg,
+                      width: 60,
+                      height: 60,
+                      color: SigmaColors.gray,
+                    ),
+                    SizedBox(height: 12),
+                    Text(
+                      "We can't find what you're looking\n for! Try a different term...",
+                      style: TextStyle(
+                        fontSize: 16,
+                        height: 1.2,
+                        color: SigmaColors.gray,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
               );
             }

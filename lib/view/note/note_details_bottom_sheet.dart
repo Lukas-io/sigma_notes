@@ -1,11 +1,14 @@
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:sigma_notes/models/note.dart';
+import 'package:sigma_notes/services/providers/note_provider.dart';
 import 'package:sigma_notes/view/widgets/collaborator_widget.dart';
 
 import '../../services/providers/auth_provider.dart';
+import '../../services/providers/biometrics_provider.dart';
 import '../widgets/commands/commands_list_item.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sigma_notes/core/colors.dart';
@@ -96,13 +99,39 @@ class NoteDetailsBottomSheet extends ConsumerWidget {
       CommandsListItem(
         title: (note.locked) ? "Remove lock" : "Lock note",
         leading: SigmaAssets.commandLockSvg,
-        onTap: () {},
+        onTap: () async {
+          // Read LocalAuthentication directly - it's keepAlive so won't dispose
+          final auth = ref.read(localAuthProvider);
+
+          // Use the service directly - no provider lifecycle issues
+          final result = await BiometricService.authenticate(
+            auth: auth,
+            localizedReason: 'Unlock your Note',
+          );
+
+          // Check if widget is still mounted after async gap
+          if (!context.mounted) return;
+
+          log(result.toString());
+          if (result.success) {
+            ref
+                .read(noteEditorProvider(note.id).notifier)
+                .updateMetadata(locked: !note.locked, shouldSaveNow: true);
+            Navigator.pop(context);
+          } else {
+            //TODO: Show some error or use pin
+            // Navigator.pop(context);
+          }
+        },
       ),
       CommandsListItem(
         title: 'Delete note',
         leading: SigmaAssets.deleteSvg,
         isDestructive: true,
-        onTap: () {},
+        onTap: () {
+          ref.read(notesProvider.notifier).deleteNote(note.id);
+          Navigator.pop(context);
+        },
       ),
       // if (note.collaborators.isNotEmpty)
       Container(

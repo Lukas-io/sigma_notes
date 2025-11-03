@@ -1,0 +1,135 @@
+import 'dart:async';
+import 'dart:io';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import '../../models/content/audio.dart';
+import '../recorder_service.dart';
+
+part 'recorder_provider.g.dart';
+
+/// Riverpod provider for the RecorderService
+/// This service handles all recording-related actions like start, stop, cancel, and amplitude tracking.
+/// Keep alive since it's a lightweight singleton.
+@Riverpod(keepAlive: true)
+RecorderService recorderService(Ref ref) {
+  return RecorderService();
+}
+
+/// Represents the state of an ongoing recording
+class RecorderState {
+  final bool isRecording;
+  final Duration duration;
+  final String? filePath;
+  final double amplitude; // <-- Add this
+
+  const RecorderState({
+    this.isRecording = false,
+    this.duration = Duration.zero,
+    this.filePath,
+    this.amplitude = 0, // default 0
+  });
+
+  /// Creates a new state by copying existing values and overriding with provided ones
+  RecorderState copyWith({
+    bool? isRecording,
+    Duration? duration,
+    String? filePath,
+    double? amplitude, // <-- Add this
+  }) {
+    return RecorderState(
+      isRecording: isRecording ?? this.isRecording,
+      duration: duration ?? this.duration,
+      filePath: filePath ?? this.filePath,
+      amplitude: amplitude ?? this.amplitude, // <-- Add this
+    );
+  }
+
+  /// Converts the recorded file into an AudioContent model
+  AudioContent toAudioContent({
+    required String id,
+    required int order,
+    String? createdBy,
+    String? lastModifiedBy,
+  }) {
+    final file = filePath != null ? File(filePath!) : null;
+    return AudioContent(
+      id: id,
+      order: order,
+      url: filePath ?? '',
+      duration: duration,
+      fileSizeBytes: file?.lengthSync(),
+      createdBy: createdBy,
+      lastModifiedBy: lastModifiedBy,
+    );
+  }
+}
+
+/// Riverpod notifier for recording
+/// Uses the [RecorderService] to manage the recording lifecycle.
+@riverpod
+class Recorder extends _$Recorder {
+  Timer? _timer;
+
+  /// Build initial idle state
+  @override
+  Future<RecorderState> build() async {
+    return const RecorderState();
+  }
+
+  RecorderService get _service => ref.read(recorderServiceProvider);
+
+  /// Start recording to the specified file path
+  /// Automatically updates the duration every second
+  Future<void> startRecording(String path) async {
+    final filePath = await _service.startRecording(path);
+    if (filePath == null) return;
+
+    state = AsyncValue.data(
+      RecorderState(
+        isRecording: true,
+        duration: Duration.zero,
+        filePath: filePath,
+      ),
+    );
+
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      state.whenData((s) {
+        state = AsyncValue.data(
+          s.copyWith(duration: s.duration + const Duration(seconds: 1)),
+        );
+      });
+    });
+  }
+
+  /// Stop the current recording
+  Future<void> stopRecording() async {
+    await _service.stopRecording();
+    _timer?.cancel();
+    state.whenData(
+      (s) => state = AsyncValue.data(s.copyWith(isRecording: false)),
+    );
+  }
+
+  /// Cancel the recording and remove the file
+  Future<void> cancelRecording() async {
+    await _service.cancelRecording();
+    _timer?.cancel();
+    state = const AsyncValue.data(RecorderState());
+  }
+
+  /// Convert current recording to an AudioContent model
+  AudioContent? toAudioContent({
+    required String id,
+    required int order,
+    String? createdBy,
+    String? lastModifiedBy,
+  }) {
+    return state.value?.toAudioContent(
+      id: id,
+      order: order,
+      createdBy: createdBy,
+      lastModifiedBy: lastModifiedBy,
+    );
+  }
+}
