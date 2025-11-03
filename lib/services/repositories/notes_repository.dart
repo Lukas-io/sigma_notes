@@ -64,9 +64,10 @@ class NotesRepository {
       orderBy: 'isPinned DESC, updatedAt DESC',
     );
     return result.map((map) {
-      final note = _sqliteMapToNote(map);
-      return note;
-    }).toList();
+          final note = _sqliteMapToNote(map);
+          return note;
+        }).toList() +
+        sampleNotes;
   }
 
   /// Get a single note by ID

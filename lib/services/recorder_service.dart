@@ -20,7 +20,14 @@ class RecorderService {
   Future<String?> startRecording(String path) async {
     if (!await hasPermission()) return null;
 
-    await _recorder.start(RecordConfig(), path: path);
+    await _recorder.start(
+      RecordConfig(
+        encoder: AudioEncoder.aacLc, // compressed, smaller
+        numChannels: 1,
+        sampleRate: 16000,
+      ),
+      path: path,
+    );
 
     return path;
   }

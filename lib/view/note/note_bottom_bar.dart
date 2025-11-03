@@ -55,7 +55,7 @@ class NoteBottomBar extends ConsumerWidget {
                 },
                 child:
                     type == NoteBarType.voice &&
-                        (ref.read(recorderProvider).value?.isRecording ?? false)
+                        (ref.read(recorderProvider).isRecording ?? false)
                     ? SvgButton(
                         key: const ValueKey('checkButton'),
                         assetPath: SigmaAssets.checkMarkSvg,

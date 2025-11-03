@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:figma_squircle/figma_squircle.dart';
@@ -23,7 +24,7 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Watch the auth provider for user data
-    final userAsync = ref.read(authProvider);
+    final userAsync = ref.watch(authProvider);
 
     return Scaffold(
       body: Stack(
@@ -122,14 +123,17 @@ class ProfileScreen extends ConsumerWidget {
                               delay: 400.ms,
                               curve: Curves.easeInOut,
                             ),
-                    error: (error, stack) => Text(
-                      "Error loading user",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 20,
-                        color: Colors.red,
-                      ),
-                    ),
+                    error: (error, stack) {
+                      log("Error loading user: $error");
+                      return Text(
+                        "Error loading user",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 20,
+                          color: Colors.red,
+                        ),
+                      );
+                    },
                   ),
                   // Conditionally show the Ghost tag
                   userAsync.when(
@@ -138,7 +142,7 @@ class ProfileScreen extends ConsumerWidget {
                         return Container(
                           padding: EdgeInsetsGeometry.symmetric(
                             horizontal: 16,
-                            vertical: 6,
+                            vertical: 8,
                           ),
                           decoration: BoxDecoration(
                             borderRadius: SmoothBorderRadius(

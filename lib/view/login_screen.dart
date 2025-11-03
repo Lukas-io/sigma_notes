@@ -108,8 +108,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     });
 
     try {
-      final authNotifier = ref.read(authProvider.notifier);
-      await authNotifier.loginAsGuest();
+      await ref.read(authProvider.notifier).loginAsGuest();
 
       if (!mounted) return;
 

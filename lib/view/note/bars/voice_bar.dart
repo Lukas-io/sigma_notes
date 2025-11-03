@@ -4,6 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:record/record.dart';
+import 'package:sigma_notes/services/providers/audio_provider.dart';
 import 'package:sigma_notes/view/widgets/sigma/sigma_ink_well.dart';
 import '../../../core/colors.dart';
 import '../../../core/assets.dart';
@@ -14,49 +17,14 @@ import '../../widgets/voice_waveform.dart';
 
 /// A voice recording bar with animated waveform
 /// Fully integrated with Recorder Riverpod provider.
-class VoiceBar extends ConsumerStatefulWidget {
+class VoiceBar extends ConsumerWidget {
   final int order;
 
   const VoiceBar({super.key, this.order = 0});
 
   @override
-  ConsumerState<VoiceBar> createState() => _VoiceBarState();
-}
-
-class _VoiceBarState extends ConsumerState<VoiceBar>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-
-  static const int barCount = 20;
-  static const double maxBarHeight = 40;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    )..repeat();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  List<double> _generateWaveform(double amplitude) {
-    final random = Random();
-    return List.generate(barCount, (i) {
-      final base = amplitude / 100;
-      final fluctuation = random.nextDouble() * 0.3;
-      return (base + fluctuation).clamp(0.0, 1.0) * maxBarHeight;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final recorder = RecorderState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final recorder = ref.watch(recorderProvider);
     print(recorder.amplitude);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
@@ -84,7 +52,9 @@ class _VoiceBarState extends ConsumerState<VoiceBar>
                 assetPath: SigmaAssets.playSvg,
                 filled: false,
                 onTap: () async {
-                  await ref.read(recorderProvider.notifier).();
+                  await ref
+                      .read(audioPlayerProvider.notifier)
+                      .play(ref.read(recorderProvider).filePath ?? "");
                 },
               ),
               SvgButton(
