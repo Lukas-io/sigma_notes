@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:sigma_notes/core/assets.dart';
 import 'package:sigma_notes/core/colors.dart';
+import 'package:sigma_notes/services/providers/search_provider.dart';
 
-class HomeSearchBar extends StatefulWidget {
+class HomeSearchBar extends ConsumerStatefulWidget {
   final Function(String)? onChanged;
   final VoidCallback? onClear;
   final VoidCallback? onLayoutPressed;
@@ -17,10 +19,10 @@ class HomeSearchBar extends StatefulWidget {
   });
 
   @override
-  State<HomeSearchBar> createState() => _HomeSearchBarState();
+  ConsumerState<HomeSearchBar> createState() => _HomeSearchBarState();
 }
 
-class _HomeSearchBarState extends State<HomeSearchBar> {
+class _HomeSearchBarState extends ConsumerState<HomeSearchBar> {
   final TextEditingController _controller = TextEditingController();
 
   bool get hasText => _controller.text.trim().isNotEmpty;
@@ -64,7 +66,10 @@ class _HomeSearchBarState extends State<HomeSearchBar> {
           Expanded(
             child: TextField(
               controller: _controller,
-              onChanged: widget.onChanged,
+              onChanged: (value) {
+                ref.read(searchQueryProvider.notifier).setQuery(value);
+                if (widget.onChanged != null) widget.onChanged!(value);
+              },
               cursorColor: SigmaColors.black,
               decoration: const InputDecoration(
                 hintText: 'Search note...',

@@ -1,8 +1,9 @@
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sigma_notes/models/note.dart';
 import 'package:sigma_notes/services/providers/note_mode_provider.dart';
 import 'package:sigma_notes/view/note/note_app_bar.dart';
 import 'package:sigma_notes/view/note/note_bottom_bar.dart';
@@ -10,14 +11,15 @@ import 'package:sigma_notes/view/note/note_screen_content.dart';
 import 'package:sigma_notes/services/providers/note_bar_provider.dart';
 
 import '../../core/colors.dart';
+import '../../services/providers/note_editor_provider.dart';
 
 enum NoteMode { view, edit }
 
 class NoteScreen extends ConsumerStatefulWidget {
-  final NoteModel note;
+  final String id;
   final NoteMode mode;
 
-  const NoteScreen(this.note, {super.key, this.mode = NoteMode.view});
+  const NoteScreen(this.id, {super.key, this.mode = NoteMode.view});
 
   @override
   ConsumerState<NoteScreen> createState() => _NoteScreenState();
@@ -36,7 +38,7 @@ class _NoteScreenState extends ConsumerState<NoteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Watch the note bar type state
+    final noteAsync = ref.watch(noteEditorProvider(widget.id));
     final barType = ref.watch(noteBarTypeStateProvider);
     return Scaffold(
       body: Column(
@@ -45,8 +47,35 @@ class _NoteScreenState extends ConsumerState<NoteScreen> {
             child: Stack(
               alignment: AlignmentGeometry.topCenter,
               children: [
-                NoteScreenContent(widget.note),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  switchInCurve: Curves.easeOut,
+                  switchOutCurve: Curves.easeIn,
 
+                  child: noteAsync.when(
+                    data: (note) => Align(
+                      alignment: AlignmentGeometry.topLeft,
+                      child: NoteScreenContent(note, key: ValueKey(note.id)),
+                    ),
+                    loading: () => const Center(
+                      key: ValueKey('note-content-loading'),
+                      child: CircularProgressIndicator.adaptive(
+                        strokeWidth: 2.5,
+                        strokeCap: StrokeCap.round,
+                      ),
+                    ),
+                    error: (e, st) {
+                      log('Error loading note: $e');
+                      return Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Center(
+                          key: ValueKey('note-content-error'),
+                          child: Text('Error loading note: $e'),
+                        ),
+                      );
+                    },
+                  ),
+                ),
                 // Top gradient
                 Positioned(
                   top: 0,
@@ -78,7 +107,7 @@ class _NoteScreenState extends ConsumerState<NoteScreen> {
                     ),
                   ),
                 ),
-                NoteAppBar(widget.note),
+                NoteAppBar(widget.id),
                 // Bottom gradient
                 Positioned(
                   bottom: 0,
@@ -136,7 +165,7 @@ class _NoteScreenState extends ConsumerState<NoteScreen> {
                 ),
                 Positioned(
                   bottom: 8,
-                  child: SafeArea(child: NoteBottomBar(widget.note)),
+                  child: SafeArea(child: NoteBottomBar(widget.id)),
                 ),
               ],
             ),

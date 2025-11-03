@@ -5,8 +5,9 @@ import '../../widgets/divider/dividers.dart';
 
 class ContentDivider extends StatelessWidget {
   final DividerContent content;
+  final String noteId;
 
-  const ContentDivider(this.content, {super.key});
+  const ContentDivider(this.content, {super.key, required this.noteId});
 
   @override
   Widget build(BuildContext context) {

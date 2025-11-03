@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:intl/intl.dart';
+import 'package:sigma_notes/core/utils/note_utils.dart';
 import 'package:uuid/uuid.dart';
 
 import 'collaborator.dart';
@@ -28,12 +29,13 @@ class NoteModel {
     this.locked = false,
     this.isPinned = false,
     this.isTemp = false,
-    this.contents = const [],
+    List<ContentModel>? contents,
     this.collaborators = const [],
     DateTime? createdAt,
     DateTime? updatedAt,
     required this.userId,
   }) : id = id ?? const Uuid().v4(),
+       contents = contents ?? [TextContent(order: 0, text: "")],
        createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
 
@@ -42,6 +44,9 @@ class NoteModel {
 
   String get formattedDateDayTime =>
       DateFormat('EEE, MMMM d, y HH:mm').format(updatedAt);
+
+  String get formattedDateForPreview =>
+      NoteUtils.formatSmartDateTime(updatedAt);
 
   String get formattedDateTime =>
       DateFormat('MMMM d, y HH:mm').format(updatedAt);
@@ -139,6 +144,7 @@ class NoteModel {
     bool? isPinned,
     List<ContentModel>? contents,
     List<Collaborator>? collaborators,
+    DateTime? updatedAt,
   }) {
     return NoteModel(
       id: id,
@@ -151,7 +157,7 @@ class NoteModel {
       contents: contents ?? this.contents,
       collaborators: collaborators ?? this.collaborators,
       createdAt: createdAt,
-      updatedAt: DateTime.now(),
+      updatedAt: updatedAt ?? DateTime.now(),
       userId: userId,
     );
   }

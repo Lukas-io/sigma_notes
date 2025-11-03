@@ -2,10 +2,7 @@ import 'dart:ui';
 
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sigma_notes/core/assets.dart';
-import 'package:sigma_notes/models/content/content_model.dart';
-import 'package:sigma_notes/models/note.dart';
 import 'package:sigma_notes/view/home/home_app_bar.dart';
 import 'package:sigma_notes/view/home/home_search_bar.dart';
 import 'package:sigma_notes/view/home/note_list_view.dart';
@@ -14,13 +11,12 @@ import 'package:sigma_notes/view/widgets/svg_button.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../core/colors.dart';
-import '../../services/providers/auth_provider.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: OpenContainer(
         closedElevation: 8,
@@ -37,17 +33,8 @@ class HomeScreen extends ConsumerWidget {
           primary: true,
           onTap: openContainer,
         ),
-        openBuilder: (context, _) => NoteScreen(
-          NoteModel(
-            title: "Untitled",
-            contents: [TextContent(order: 0, text: "")],
-            collaborators: [],
-            userId:
-                ref.read(authProvider.notifier).getCurrentUser()?.id ??
-                Uuid().v4(),
-          ),
-          mode: NoteMode.edit,
-        ),
+        openBuilder: (context, _) =>
+            NoteScreen(Uuid().v4(), mode: NoteMode.edit),
       ),
       body: Stack(
         alignment: AlignmentGeometry.topCenter,
@@ -60,10 +47,7 @@ class HomeScreen extends ConsumerWidget {
             child: SafeArea(
               child: Column(
                 spacing: 16,
-                children: [
-                  HomeSearchBar(onChanged: (query) {}),
-                  NoteListView(),
-                ],
+                children: [HomeSearchBar(), NoteListView()],
               ),
             ),
           ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sigma_notes/core/colors.dart';
-import 'package:sigma_notes/view/widgets/sigma_ink_well.dart';
+import 'package:sigma_notes/view/widgets/sigma/sigma_ink_well.dart';
 
 class SvgButton extends StatelessWidget {
   final String assetPath;

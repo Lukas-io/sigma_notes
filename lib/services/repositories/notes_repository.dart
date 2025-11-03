@@ -17,7 +17,7 @@ class NotesRepository {
       'title': note.title,
       'thumbnail': note.thumbnail,
       'label': note.label,
-      'isTemp': note.isTemp,
+      'isTemp': note.isTemp ? 1 : 0,
       'locked': note.locked ? 1 : 0,
       'isPinned': note.isPinned ? 1 : 0,
       // Serialize all content blocks
@@ -63,7 +63,10 @@ class NotesRepository {
       whereArgs: [userId],
       orderBy: 'isPinned DESC, updatedAt DESC',
     );
-    return result.map((map) => _sqliteMapToNote(map)).toList();
+    return result.map((map) {
+      final note = _sqliteMapToNote(map);
+      return note;
+    }).toList();
   }
 
   /// Get a single note by ID

@@ -1,56 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sigma_notes/core/assets.dart';
 import 'package:sigma_notes/core/colors.dart';
+import 'package:sigma_notes/core/router/routes.dart';
 import 'package:sigma_notes/models/note.dart';
 import 'package:sigma_notes/services/providers/note_provider.dart';
 import 'package:sigma_notes/view/home/note_preview_widget.dart';
 import 'package:sigma_notes/view/note/note_screen.dart';
-import 'package:sigma_notes/view/widgets/sigma_ink_well.dart';
+import 'package:sigma_notes/view/widgets/sigma/sigma_ink_well.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../core/utils/note_utils.dart';
 import '../../models/content/text.dart';
 import '../../services/providers/auth_provider.dart';
+import '../../services/providers/search_provider.dart';
 
 class NoteListView extends ConsumerWidget {
-  const NoteListView({super.key});
+  final double minColumnWidth;
 
-  static const double minColumnWidth = 150;
-  static const double columnSpacing = 8;
+  final double columnSpacing;
+
+  const NoteListView({
+    super.key,
+    this.minColumnWidth = 150,
+    this.columnSpacing = 8,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Watch the notes provider for async data
+
     final notesAsync = ref.watch(notesProvider);
+    final query = ref.watch(searchQueryProvider);
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final maxWidth = constraints.maxWidth;
 
         return notesAsync.when(
-          data: (notes) {
+          data: (unfilterNotes) {
+            final notes = unfilterNotes
+                .where((note) => note.searchableText.contains(query))
+                .toList();
             // Handle empty state
-            if (notes.isEmpty) {
+            if (unfilterNotes.isEmpty) {
               return SigmaInkwell(
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => NoteScreen(
-                        NoteModel(
-                          title: "Untitled",
-                          contents: [TextContent(order: 0, text: "")],
-                          collaborators: [],
-                          userId:
-                              ref
-                                  .read(authProvider.notifier)
-                                  .getCurrentUser()
-                                  ?.id ??
-                              Uuid().v4(),
-                        ),
-                        mode: NoteMode.edit,
-                      ),
+                      builder: (context) =>
+                          NoteScreen(Uuid().v4(), mode: NoteMode.edit),
                     ),
                   );
                 },
@@ -124,7 +126,18 @@ class NoteListView extends ConsumerWidget {
               ),
             );
           },
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 100.0,
+              horizontal: 36,
+            ),
+            child: Center(
+              child: CircularProgressIndicator.adaptive(
+                strokeWidth: 2.5,
+                strokeCap: StrokeCap.round,
+              ),
+            ),
+          ),
           error: (error, stack) => Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

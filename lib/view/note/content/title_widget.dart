@@ -4,11 +4,13 @@ import 'package:sigma_notes/services/providers/note_mode_provider.dart';
 import 'package:sigma_notes/view/note/note_screen.dart';
 
 import '../../../core/colors.dart';
+import '../../../services/providers/note_editor_provider.dart';
 
 class TitleWidget extends ConsumerStatefulWidget {
   final String title;
+  final String noteId;
 
-  const TitleWidget(this.title, {super.key});
+  const TitleWidget(this.title, {super.key, required this.noteId});
 
   @override
   ConsumerState<TitleWidget> createState() => _TitleWidgetState();
@@ -50,6 +52,11 @@ class _TitleWidgetState extends ConsumerState<TitleWidget> {
               : TextField(
                   controller: titleEditingController,
                   maxLines: null,
+                  onChanged: (value) {
+                    ref
+                        .read(noteEditorProvider(widget.noteId).notifier)
+                        .updateMetadata(title: value);
+                  },
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     focusedBorder: InputBorder.none,

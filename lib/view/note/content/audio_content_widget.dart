@@ -7,8 +7,9 @@ import 'package:sigma_notes/view/widgets/svg_button.dart';
 
 class AudioContentWidget extends StatelessWidget {
   final AudioContent content;
+  final String noteId;
 
-  const AudioContentWidget(this.content, {super.key});
+  const AudioContentWidget(this.content, {super.key, required this.noteId});
 
   @override
   Widget build(BuildContext context) {

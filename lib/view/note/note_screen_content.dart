@@ -38,7 +38,7 @@ class _NoteScreenContentState extends State<NoteScreenContent> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              TitleWidget(widget.note.title.trim()),
+              TitleWidget(widget.note.title.trim(), noteId: widget.note.id),
 
               LabelWidget(
                 label: widget.note.label,
@@ -46,10 +46,14 @@ class _NoteScreenContentState extends State<NoteScreenContent> {
               ),
 
               SizedBox(height: 20),
+
               ...widget.note.contents.map(
                 (content) => Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
-                  child: ContentWidget(content: content),
+                  child: ContentWidget(
+                    content: content,
+                    noteId: widget.note.id,
+                  ),
                 ),
               ),
               SizedBox(height: 250),

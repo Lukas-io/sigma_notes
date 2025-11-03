@@ -7,7 +7,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sigma_notes/view/profile/device_info_widget.dart';
 import 'package:sigma_notes/view/profile/profile_app_bar.dart';
-import 'package:sigma_notes/view/widgets/sigma_ink_well.dart';
+import 'package:sigma_notes/view/widgets/sigma/sigma_ink_well.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -15,7 +15,7 @@ import '../../core/assets.dart';
 import '../../core/colors.dart';
 import '../../core/router/routes.dart';
 import '../../services/providers/auth_provider.dart';
-import '../widgets/sigma_image.dart';
+import '../widgets/sigma/sigma_image.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});

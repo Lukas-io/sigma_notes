@@ -28,6 +28,18 @@ class NotesNotifier extends _$NotesNotifier {
     return [];
   }
 
+  /// Loads notes from the repository without modifying provider state
+  Future<List<NoteModel>> fetchNotesForCurrentUser() async {
+    if (_currentUserId == null) {
+      final user = ref.read(authProvider.notifier).getCurrentUser();
+      if (user == null) return [];
+      _currentUserId = user.id;
+    }
+
+    final repository = ref.read(notesRepositoryProvider);
+    return repository.getAllNotes(_currentUserId!);
+  }
+
   /// Load all notes for the current authenticated user
   Future<List<NoteModel>> loadNotesForCurrentUser() async {
     if (_currentUserId == null) {
@@ -95,7 +107,8 @@ class NotesNotifier extends _$NotesNotifier {
     state = await AsyncValue.guard(() async {
       final repository = ref.read(notesRepositoryProvider);
       await repository.updateNote(note);
-      return repository.getAllNotes(_currentUserId!);
+
+      return await repository.getAllNotes(_currentUserId!);
     });
   }
 

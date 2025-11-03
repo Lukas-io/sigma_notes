@@ -4,7 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sigma_notes/core/colors.dart';
 import 'package:sigma_notes/models/note.dart';
-import 'package:sigma_notes/view/widgets/sigma_ink_well.dart';
+import 'package:sigma_notes/view/widgets/sigma/sigma_ink_well.dart';
 import 'package:sprung/sprung.dart';
 
 import '../../services/providers/note_bar_provider.dart';
@@ -19,9 +19,9 @@ import 'bars/voice_bar.dart';
 enum NoteBarType { minimal, edit, text, draw, layout, commands, voice }
 
 class NoteBottomBar extends ConsumerWidget {
-  final NoteModel note;
+  final String noteId;
 
-  const NoteBottomBar(this.note, {super.key});
+  const NoteBottomBar(this.noteId, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -86,7 +86,7 @@ class NoteBottomBar extends ConsumerWidget {
                     NoteBarType.voice => VoiceBar(),
                     NoteBarType.draw => DrawBar(),
                     NoteBarType.layout => LayoutBar(),
-                    NoteBarType.commands => CommandsBar(note),
+                    NoteBarType.commands => CommandsBar(noteId),
                     NoteBarType.minimal => MinimalBar(),
                   },
                 ),

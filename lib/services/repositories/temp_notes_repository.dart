@@ -29,6 +29,9 @@ class TempNotesRepository {
       'isPinned': note.isPinned ? 1 : 0,
       'isTemp': note.isTemp ? 1 : 0,
       'contents': jsonEncode(note.contents.map((c) => c.toJson()).toList()),
+      'collaborators': jsonEncode(
+        note.collaborators.map((c) => c.toJson()).toList(),
+      ),
       'createdAt': note.createdAt.toIso8601String(),
       'updatedAt': note.updatedAt.toIso8601String(),
       'userId': note.userId,

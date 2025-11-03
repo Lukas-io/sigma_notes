@@ -12,9 +12,13 @@ import 'package:sigma_notes/view/note/note_screen.dart';
 import 'package:sigma_notes/view/widgets/collaborator_widget.dart';
 import 'package:sigma_notes/view/widgets/svg_button.dart';
 import 'package:animations/animations.dart';
+import 'package:sprung/sprung.dart';
 
+import '../../models/content/content_type.dart';
+import '../../models/content/text.dart';
 import '../../services/providers/biometrics_provider.dart';
 import '../note/content/checklist_content_widget.dart';
+import '../note/note_details_bottom_sheet.dart';
 
 class NotePreviewWidget extends ConsumerStatefulWidget {
   final NoteModel note;
@@ -32,7 +36,7 @@ class _NotePreviewWidgetState extends ConsumerState<NotePreviewWidget> {
     return OpenContainer(
       transitionDuration: Duration(milliseconds: 300),
       transitionType: ContainerTransitionType.fadeThrough,
-      openBuilder: (context, _) => NoteScreen(note, mode: NoteMode.view),
+      openBuilder: (context, _) => NoteScreen(note.id, mode: NoteMode.view),
       closedElevation: 1,
       openShape: const SmoothRectangleBorder(
         borderRadius: SmoothBorderRadius.all(
@@ -127,6 +131,7 @@ class NotePreviewContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
           decoration: note.thumbnail == null
@@ -178,7 +183,7 @@ class NotePreviewContent extends StatelessWidget {
                         iconSize: 20,
                         iconColor: SigmaColors.gray,
                         onTap: () {
-                          print("object");
+                          NoteDetailsBottomSheet.show(context, note);
                         },
                       ),
                     ],
@@ -200,6 +205,7 @@ class NotePreviewContent extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
+                        height: 1.15,
                         color: SigmaColors.black,
                         fontWeight: FontWeight.w600,
                       ),
@@ -208,36 +214,56 @@ class NotePreviewContent extends StatelessWidget {
                   if (!(note.isPinned || note.collaborators.isNotEmpty))
                     Transform.translate(
                       offset: Offset(8, 0),
-
                       child: SvgButton(
                         assetPath: SigmaAssets.moreVerticalSvg,
                         filled: false,
                         iconSize: 20,
                         iconColor: SigmaColors.gray,
                         onTap: () {
-                          print("object");
+                          NoteDetailsBottomSheet.show(context, note);
                         },
                       ),
                     ),
                 ],
               ),
               SizedBox(height: 4),
-              // Text(
-              //   note.content,
-              //   maxLines: 3,
-              //   overflow: TextOverflow.ellipsis,
-              //   style: TextStyle(
-              //     color: SigmaColors.gray,
-              //     fontSize: 12,
-              //     fontWeight: FontWeight.w500,
-              //   ),
-              // ),
-              NoteCheckList(note),
+
+              AnimatedSize(
+                duration: Duration(milliseconds: 800),
+                curve: Sprung(24),
+                child:
+                    note.contents
+                        .where((c) => c.type == ContentType.text)
+                        .map((c) => (c as TextContent).text)
+                        .join('')
+                        .isNotEmpty
+                    ? Text(
+                        note.contents
+                            .where((c) => c.type == ContentType.text)
+                            .map((c) => (c as TextContent).text)
+                            .join('\n')
+                            .trim(),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: SigmaColors.gray,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          height: 1.25,
+                        ),
+                      )
+                    : SizedBox(width: double.infinity),
+              ),
+
+              if (note.contents
+                  .where((c) => c.type == ContentType.checklist)
+                  .isNotEmpty)
+                NoteCheckList(note),
               Text(".....", style: TextStyle(height: 1)),
               NotePreviewChips(note),
-              SizedBox(height: 12),
+              SizedBox(height: 4),
               Text(
-                note.formattedDate,
+                note.formattedDateForPreview,
                 style: TextStyle(
                   color: SigmaColors.gray,
                   fontSize: 11,

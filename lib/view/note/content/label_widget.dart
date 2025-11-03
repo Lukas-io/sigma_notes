@@ -5,7 +5,7 @@ import 'package:sigma_notes/services/providers/note_mode_provider.dart';
 
 import '../../../core/assets.dart';
 import '../../../core/colors.dart';
-import '../../widgets/sigma_ink_well.dart';
+import '../../widgets/sigma/sigma_ink_well.dart';
 import '../note_screen.dart';
 
 class LabelWidget extends ConsumerWidget {
@@ -74,17 +74,20 @@ class LabelWidget extends ConsumerWidget {
       children: [
         labelWidget(),
         AnimatedSwitcher(
-          duration: Duration(milliseconds: 300),
+          duration: Duration(milliseconds: 250),
+          switchInCurve: Curves.easeOut,
+          switchOutCurve: Curves.easeIn,
           child: mode == NoteMode.view
               ? Text(
                   "｜ $updatedDate",
+                  key: Key("label-updated-date-show"),
                   style: TextStyle(
                     color: SigmaColors.gray,
                     fontSize: 12,
                     height: 1.3,
                   ),
                 )
-              : SizedBox.shrink(),
+              : SizedBox.shrink(key: Key("label-updated-date-hide")),
         ),
       ],
     );

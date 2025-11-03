@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:sigma_notes/models/collaborator.dart';
-import 'package:sigma_notes/view/widgets/sigma_image.dart';
+import 'package:sigma_notes/view/widgets/sigma/sigma_image.dart';
 import 'package:sigma_notes/core/assets.dart';
 import 'package:sprung/sprung.dart';
 
@@ -42,7 +42,7 @@ class CollaboratorWidget extends StatelessWidget {
                       ),
                     )
                     .animate()
-                    .then(delay: 500.ms)
+                    .then(delay: 200.ms)
                     .slideX(begin: 1, curve: Sprung(32), duration: 750.ms)
                     .fade(duration: 400.ms, curve: Curves.easeOut)
                     .blur(
@@ -65,7 +65,7 @@ class CollaboratorWidget extends StatelessWidget {
                       ),
                     )
                     .animate()
-                    .then(delay: 600.ms)
+                    .then(delay: 300.ms)
                     .slideX(begin: 1, curve: Sprung(32), duration: 900.ms)
                     .fade(duration: 400.ms, curve: Curves.easeOut)
                     .blur(
@@ -88,7 +88,7 @@ class CollaboratorWidget extends StatelessWidget {
                       ),
                     )
                     .animate()
-                    .then(delay: 700.ms)
+                    .then(delay: 400.ms)
                     .slideX(begin: 1, curve: Sprung(32), duration: 1200.ms)
                     .fade(duration: 400.ms, curve: Curves.easeOut)
                     .blur(

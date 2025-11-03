@@ -6,8 +6,8 @@ import 'package:sigma_notes/view/widgets/svg_button.dart';
 
 import '../../core/router/routes.dart';
 import '../../services/providers/auth_provider.dart';
-import '../widgets/sigma_image.dart';
-import '../widgets/sigma_ink_well.dart';
+import '../widgets/sigma/sigma_image.dart';
+import '../widgets/sigma/sigma_ink_well.dart';
 
 class HomeAppBar extends ConsumerWidget {
   const HomeAppBar({super.key});
@@ -28,10 +28,10 @@ class HomeAppBar extends ConsumerWidget {
 
                   child: SigmaImage(
                     assetPath:
-                        ref
-                            .read(authProvider.notifier)
-                            .getCurrentUser()
-                            ?.profilePicture ??
+                    ref
+                        .read(authProvider.notifier)
+                        .getCurrentUser()
+                        ?.profilePicture ??
                         SigmaAssets.avatar1,
                     fit: BoxFit.cover,
                     height: 44,

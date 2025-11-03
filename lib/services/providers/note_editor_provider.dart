@@ -4,6 +4,7 @@ import '../../models/collaborator.dart';
 import '../../models/note.dart';
 import '../../models/content/content_model.dart';
 import '../repositories/temp_notes_repository.dart';
+import 'auth_provider.dart';
 import 'note_provider.dart';
 
 part 'note_editor_provider.g.dart';
@@ -43,7 +44,9 @@ class NoteEditor extends _$NoteEditor {
   Future<NoteModel> build(String noteId) async {
     final notes = await ref
         .read(notesProvider.notifier)
-        .loadNotesForCurrentUser();
+        .fetchNotesForCurrentUser();
+    String? currentUserId =
+        ref.read(authProvider.notifier).getCurrentUser()?.id ?? "";
 
     // 1️⃣ Check if note already loaded in app memory
     final existing = notes.firstWhere(
@@ -51,7 +54,7 @@ class NoteEditor extends _$NoteEditor {
       orElse: () => NoteModel(
         id: noteId,
         title: "Untitled document",
-        userId: "", // placeholder
+        userId: currentUserId,
       ),
     );
 
@@ -89,7 +92,8 @@ class NoteEditor extends _$NoteEditor {
     DateTime? createdAt,
     DateTime? updatedAt,
     String? userId,
-  }) {
+    bool shouldSaveNow = false,
+  }) async {
     final current = state.value;
     if (current == null) return;
 
@@ -111,6 +115,7 @@ class NoteEditor extends _$NoteEditor {
     );
 
     _scheduleAutoSave();
+    if (shouldSaveNow) await saveNow();
   }
 
   /// Updates a specific content block.
@@ -123,7 +128,6 @@ class NoteEditor extends _$NoteEditor {
     final updatedContents = current.contents.map((c) {
       return c.id == contentId ? updatedContent : c;
     }).toList();
-
     state = AsyncData(current.copyWith(contents: updatedContents));
     _scheduleAutoSave();
   }
@@ -191,14 +195,17 @@ class NoteEditor extends _$NoteEditor {
   /// and removes its temporary version.
   Future<void> saveNow() async {
     _autoSaveTimer?.cancel();
+    final current = state.value?.copyWith(updatedAt: DateTime.now());
 
-    final current = state.value;
     if (current == null) return;
+    // Update the state correctly
+    state = AsyncData(current);
 
     _isSaving = true;
     await ref.read(notesProvider.notifier).updateNote(current);
     await _tempRepository.deleteTempNote(current.id);
     _lastSavedJson = _serialize(current);
+
     _isSaving = false;
   }
 

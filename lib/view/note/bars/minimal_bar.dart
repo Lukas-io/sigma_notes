@@ -5,7 +5,7 @@ import 'package:flutter_svg/svg.dart';
 
 import '../../../core/assets.dart';
 import '../../../services/providers/note_bar_provider.dart';
-import '../../widgets/sigma_ink_well.dart';
+import '../../widgets/sigma/sigma_ink_well.dart';
 import '../note_bottom_bar.dart';
 
 class MinimalBar extends ConsumerWidget {

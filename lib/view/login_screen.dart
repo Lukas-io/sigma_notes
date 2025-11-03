@@ -8,9 +8,9 @@ import 'package:go_router/go_router.dart';
 import 'package:sigma_notes/core/assets.dart';
 import 'package:sigma_notes/core/router/routes.dart';
 import 'package:sigma_notes/services/providers/auth_provider.dart';
-import 'package:sigma_notes/view/widgets/sigma_button.dart';
-import 'package:sigma_notes/view/widgets/sigma_ink_well.dart';
-import 'package:sigma_notes/view/widgets/sigma_textfield.dart';
+import 'package:sigma_notes/view/widgets/sigma/sigma_button.dart';
+import 'package:sigma_notes/view/widgets/sigma/sigma_ink_well.dart';
+import 'package:sigma_notes/view/widgets/sigma/sigma_textfield.dart';
 
 import '../core/colors.dart';
 

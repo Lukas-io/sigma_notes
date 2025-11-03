@@ -33,11 +33,13 @@ class ChecklistContentWidget extends StatelessWidget {
   final ChecklistContent content;
   final CheckListSize size;
   final int? maxLength;
+  final String noteId;
 
   const ChecklistContentWidget(
     this.content, {
     super.key,
     this.maxLength,
+    required this.noteId,
     this.size = CheckListSize.small,
   });
 

@@ -77,23 +77,34 @@ class TextContent extends ContentModel {
   @override
   String getSearchableText() => text;
 
-  AttachmentContent copyWith({String? name, String? url, int? order}) {
-    return AttachmentContent(
+  /// Returns a new [TextContent] with updated fields.
+  TextContent copyWith({
+    String? text,
+    TextStyleType? style,
+    Map<String, dynamic>? formatting,
+    int? order,
+    DateTime? updatedAt,
+    bool? isCollapsed,
+    String? backgroundColor,
+    int? indentLevel,
+    String? parentBlockId,
+    Map<String, dynamic>? metadata,
+  }) {
+    return TextContent(
       id: id,
       order: order ?? this.order,
-      name: name ?? text,
-      url: url ?? id,
-      size: text.length,
-      mimeType: MimeTypeCategory.document,
+      text: text ?? this.text,
+      style: style ?? this.style,
+      formatting: formatting ?? this.formatting,
       createdAt: createdAt,
-      updatedAt: DateTime.now(),
+      updatedAt: updatedAt ?? DateTime.now(),
       createdBy: createdBy,
       lastModifiedBy: lastModifiedBy,
-      isCollapsed: isCollapsed,
-      backgroundColor: backgroundColor,
-      indentLevel: indentLevel,
-      parentBlockId: parentBlockId,
-      metadata: metadata,
+      isCollapsed: isCollapsed ?? this.isCollapsed,
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      indentLevel: indentLevel ?? this.indentLevel,
+      parentBlockId: parentBlockId ?? this.parentBlockId,
+      metadata: metadata ?? this.metadata,
     );
   }
 }

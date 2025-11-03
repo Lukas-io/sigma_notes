@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sigma_notes/core/colors.dart';
-import 'package:sigma_notes/view/widgets/sigma_ink_well.dart';
+import 'package:sigma_notes/view/widgets/sigma/sigma_ink_well.dart';
 import '../../services/providers/device_info_provider.dart';
 
 class DeviceInfoWidget extends ConsumerWidget {

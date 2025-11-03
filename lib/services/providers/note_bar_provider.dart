@@ -20,9 +20,7 @@ class NoteBarTypeState extends _$NoteBarTypeState {
       FocusManager.instance.primaryFocus?.unfocus();
     }
     final mode = ref.read(noteModeStateProvider);
-    print(mode);
     if (mode == NoteMode.edit && type == NoteBarType.minimal) {
-      print("hello");
       state = NoteBarType.edit;
     } else if (mode == NoteMode.view && (type != NoteBarType.commands)) {
       state = NoteBarType.minimal;

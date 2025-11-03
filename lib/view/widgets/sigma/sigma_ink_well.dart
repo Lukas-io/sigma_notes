@@ -47,6 +47,7 @@ class _SigmaInkwellState extends State<SigmaInkwell> {
       onTap: widget.onTap,
       child: Container(
         color: Colors.transparent,
+        padding: EdgeInsetsGeometry.all(1),
         child: AnimatedOpacity(
           duration: widget.duration,
           opacity: _isPressed ? widget.pressedOpacity : 1.0,

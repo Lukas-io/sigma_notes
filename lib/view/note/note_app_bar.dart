@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sigma_notes/core/assets.dart';
-import 'package:sigma_notes/models/note.dart';
 import 'package:sigma_notes/services/providers/note_editor_provider.dart';
-import 'package:sigma_notes/services/providers/note_provider.dart';
 import 'package:sigma_notes/view/note/note_screen.dart';
-import 'package:sigma_notes/view/widgets/sigma_ink_well.dart';
+import 'package:sigma_notes/view/widgets/sigma/sigma_ink_well.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../core/colors.dart';
+import '../../models/content/text.dart';
 import '../../services/providers/note_mode_provider.dart';
 import '../widgets/collaborator_widget.dart';
 
 class NoteAppBar extends ConsumerWidget {
-  final NoteModel note;
+  final String noteId;
 
-  const NoteAppBar(this.note, {super.key});
+  const NoteAppBar(this.noteId, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -82,12 +82,26 @@ class NoteAppBar extends ConsumerWidget {
 
                 SigmaInkwell(
                   onTap: () {
+                    // Change mode
                     ref
                         .read(noteModeStateProvider.notifier)
                         .setMode(
                           mode == NoteMode.view ? NoteMode.edit : NoteMode.view,
                         );
-                    ref.read(noteEditorProvider(note.id).notifier).saveNow();
+
+                    // // Add TextContent if content is empty on edit.
+                    // final note = ref.read(noteEditorProvider(noteId)).value;
+                    // if (mode == NoteMode.edit &&
+                    //     (note?.contents.isEmpty ?? false)) {
+                    //   ref
+                    //       .read(noteEditorProvider(noteId).notifier)
+                    //       .addContent(TextContent(text: '', order: 0));
+                    // }
+
+                    // Save note
+                    if (mode == NoteMode.edit) {
+                      ref.read(noteEditorProvider(noteId).notifier).saveNow();
+                    }
                   },
                   child: Container(
                     decoration: BoxDecoration(
