@@ -15,6 +15,25 @@ and native platform integration. Built with Flutter and Riverpod for state manag
 
 [**▶️ Watch the app in action**](https://youtu.be/VbMWqC9qMJg)
 
+<details>
+  <summary><h2>📱 ▼ View App Screenshots</h2></summary>
+  <br>
+
+<div style="
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 10px;
+  scroll-behavior: smooth;
+">
+  <img src="https://github.com/user-attachments/assets/b3c6672d-9e04-4a54-81bb-ad3dd3f3cf8a" alt="Screenshot 1" style="width: 250px; height: auto; margin-right: 8px; border-radius: 8px;" />
+  <img src="https://github.com/user-attachments/assets/1870a48c-21a9-402e-bb83-4e0eb716ea21" alt="Screenshot 2" style="width: 250px; height: auto; margin-right: 8px; border-radius: 8px;" />
+  <img src="https://github.com/user-attachments/assets/e832dc62-158c-4681-9a36-887caf1bedcf" alt="Screenshot 3" style="width: 250px; height: auto; margin-right: 8px; border-radius: 8px;" />
+  <img src="https://github.com/user-attachments/assets/6d68e61f-ef6a-406f-a3e5-60b6a235bced" alt="Screenshot 4" style="width: 250px; height: auto; margin-right: 8px; border-radius: 8px;" />
+  <img src="https://github.com/user-attachments/assets/539d3b88-e27a-46b3-83f2-dfe2b5028be2" alt="Screenshot 5" style="width: 250px; height: auto; margin-right: 8px; border-radius: 8px;" />
+</div>
+
+</details>
+
 ## Features
 
 - **Secure Authentication**: Mock authentication with credential validation
@@ -159,13 +178,6 @@ The app emphasizes:
 - **Developer Experience**: Clean architecture, type-safe state management, comprehensive testing
 
 ---
-
-## Screenshots
-<img width="1206" height="2622" alt="Simulator Screenshot - iPhone 17 - 2025-11-04 at 19 52 56" src="https://github.com/user-attachments/assets/b3c6672d-9e04-4a54-81bb-ad3dd3f3cf8a" /><img width="1206" height="2622" alt="Simulator Screenshot - iPhone 17 - 2025-11-04 at 19 52 59" src="https://github.com/user-attachments/assets/1870a48c-21a9-402e-bb83-4e0eb716ea21" /><img width="1206" height="2622" alt="Simulator Screenshot - iPhone 17 - 2025-11-04 at 19 53 06" src="https://github.com/user-attachments/assets/e832dc62-158c-4681-9a36-887caf1bedcf" /><img width="1206" height="2622" alt="Simulator Screenshot - iPhone 17 - 2025-11-04 at 19 54 28" src="https://github.com/user-attachments/assets/6d68e61f-ef6a-406f-a3e5-60b6a235bced" /><img width="1206" height="2622" alt="Simulator Screenshot - iPhone 17 - 2025-11-04 at 19 54 42" src="https://github.com/user-attachments/assets/539d3b88-e27a-46b3-83f2-dfe2b5028be2" />
-
-
-
-
 
 ## 📄 License
 
