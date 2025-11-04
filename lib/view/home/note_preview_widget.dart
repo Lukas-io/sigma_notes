@@ -14,8 +14,7 @@ import 'package:sigma_notes/view/widgets/svg_button.dart';
 import 'package:animations/animations.dart';
 import 'package:sprung/sprung.dart';
 
-import '../../models/content/content_type.dart';
-import '../../models/content/text.dart';
+import '../../models/content/content_model.dart';
 import '../../services/providers/biometrics_provider.dart';
 import '../note/content/checklist_content_widget.dart';
 import '../note/note_details_bottom_sheet.dart';
@@ -143,7 +142,6 @@ class NotePreviewContent extends StatelessWidget {
                   image: DecorationImage(
                     image: Image.asset(note.thumbnail!).image,
                     fit: BoxFit.cover,
-                    opacity: 0.2,
                   ),
                 ),
           height: note.thumbnail == null ? null : 120,
@@ -165,7 +163,9 @@ class NotePreviewContent extends StatelessWidget {
 
                           children: [
                             if (note.collaborators.isNotEmpty)
-                              Expanded(child: CollaboratorWidget()),
+                              Expanded(
+                                child: CollaboratorWidget(noteId: note.id),
+                              ),
                             Padding(
                               padding: const EdgeInsets.symmetric(
                                 vertical: 2.0,
@@ -174,7 +174,9 @@ class NotePreviewContent extends StatelessWidget {
                                 assetPath: SigmaAssets.pinSvg,
                                 filled: false,
                                 iconSize: 20,
-                                iconColor: SigmaColors.gray,
+                                iconColor: note.thumbnail != null
+                                    ? SigmaColors.white
+                                    : SigmaColors.gray,
                               ),
                             ),
                           ],
@@ -184,7 +186,9 @@ class NotePreviewContent extends StatelessWidget {
                         assetPath: SigmaAssets.moreVerticalSvg,
                         filled: false,
                         iconSize: 20,
-                        iconColor: SigmaColors.gray,
+                        iconColor: note.thumbnail != null
+                            ? SigmaColors.white
+                            : SigmaColors.gray,
                         onTap: () {
                           NoteDetailsBottomSheet.show(context, note);
                         },
@@ -258,10 +262,14 @@ class NotePreviewContent extends StatelessWidget {
                     : SizedBox(width: double.infinity),
               ),
 
-              if (note.contents
-                  .where((c) => c.type == ContentType.checklist)
-                  .isNotEmpty)
-                NoteCheckList(note),
+              AnimatedSize(
+                duration: Duration(milliseconds: 300),
+                child: NoteCheckList(
+                  note.contents
+                      .where((c) => c.type == ContentType.checklist)
+                      .toList(),
+                ),
+              ),
               Text(".....", style: TextStyle(height: 1)),
               NotePreviewChips(note),
               SizedBox(height: 4),
@@ -282,19 +290,34 @@ class NotePreviewContent extends StatelessWidget {
 }
 
 class NoteCheckList extends StatelessWidget {
-  final NoteModel note;
+  final List<ContentModel> contents;
 
-  const NoteCheckList(this.note, {super.key});
+  const NoteCheckList(this.contents, {super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Extract all checklist items from note contents
+    // final allChecklistItems =;
+
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
       child: Column(
-        spacing: 4,
-        // children: note.checkList
-        //     .map((model) => NoteCheckListItem(model: model))
-        //     .toList(),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: contents
+            .map((content) => content as ChecklistContent)
+            .expand((checklist) => checklist.items)
+            .where((item) => item.text.trim().isNotEmpty)
+            .take(3) // show only the first 3 items
+            .map((item) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 1.0),
+                child: ChecklistItemContentWidget(
+                  item,
+                  size: CheckListSize.small,
+                ),
+              );
+            })
+            .toList(),
       ),
     );
   }

@@ -9,6 +9,9 @@ class Collaborator {
   /// Optional name of the collaborator.
   final String? name;
 
+  /// URL of the collaborator's profile image.
+  final String? profileImageUrl;
+
   /// The role/permission level of the collaborator.
   final CollaboratorRole role;
 
@@ -22,6 +25,7 @@ class Collaborator {
     required this.userId,
     required this.email,
     this.name,
+    this.profileImageUrl,
     this.role = CollaboratorRole.viewer,
     DateTime? addedAt,
   }) : addedAt = addedAt ?? DateTime.now();
@@ -32,6 +36,7 @@ class Collaborator {
       'userId': userId,
       'email': email,
       'name': name,
+      'profileImageUrl': profileImageUrl,
       'role': role.name,
       'addedAt': addedAt.toIso8601String(),
     };
@@ -43,6 +48,7 @@ class Collaborator {
       userId: map['userId'],
       email: map['email'],
       name: map['name'],
+      profileImageUrl: map['profileImageUrl'],
       role: CollaboratorRole.values.firstWhere(
         (r) => r.name == map['role'],
         orElse: () => CollaboratorRole.viewer,
@@ -60,12 +66,17 @@ class Collaborator {
 
   /// Creates a copy of this [Collaborator] with optional changes.
   ///
-  /// Useful when you want to update a collaborator's name or role.
-  Collaborator copyWith({String? name, CollaboratorRole? role}) {
+  /// Useful when you want to update a collaborator's name, role, or profile image.
+  Collaborator copyWith({
+    String? name,
+    String? profileImageUrl,
+    CollaboratorRole? role,
+  }) {
     return Collaborator(
       userId: userId,
       email: email,
       name: name ?? this.name,
+      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
       role: role ?? this.role,
       addedAt: addedAt,
     );

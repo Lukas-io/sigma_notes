@@ -153,6 +153,15 @@ abstract class ContentModel {
     }
   }
 
+  /// Simple helper: returns a clone with a new order.
+  ContentModel copyWithOrder(int? newOrder) {
+    final json = toJson();
+    if (newOrder != null) {
+      json['order'] = newOrder;
+    }
+    return ContentModel.fromJson(json);
+  }
+
   /// Base toJson that includes common fields
   Map<String, dynamic> baseToJson() => {
     'id': id,

@@ -2,36 +2,42 @@ import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sigma_notes/core/colors.dart';
+import 'package:sigma_notes/models/content/content_model.dart';
 import 'package:sigma_notes/view/note/bars/color_picker.dart';
 import 'package:sigma_notes/view/widgets/sigma/sigma_ink_well.dart';
 
 import '../../../core/assets.dart';
+import '../../../services/providers/focus_content_provider.dart';
+import '../../../services/providers/note_editor_provider.dart';
 
 enum TextEditOptionType { radio, select, button }
 
 class TextEditingOption {
   final Widget? child;
   final String? assetPath;
-  final VoidCallback? onPressed;
+  final VoidCallback? onTap;
   final bool isActive;
   final int flex;
 
   const TextEditingOption({
     this.child,
     this.assetPath,
-    this.onPressed,
+    this.onTap,
     this.flex = 1,
     required this.isActive,
   });
 }
 
-class TextBar extends StatelessWidget {
-  const TextBar({super.key});
+class TextBar extends ConsumerWidget {
+  final String noteId;
+
+  const TextBar(this.noteId, {super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
       child: Column(
@@ -77,6 +83,33 @@ class TextBar extends StatelessWidget {
                 child: TextEditOptionsWidget([
                   TextEditingOption(
                     isActive: false,
+                    onTap: () {
+                      print("object");
+                      final focusId = ref.read(focusedContentStateProvider);
+                      final editor = ref.read(
+                        noteEditorProvider(noteId).notifier,
+                      );
+
+                      if (focusId != null) {
+                        final note = ref.read(noteEditorProvider(noteId)).value;
+                        final content = note?.contents.firstWhere(
+                          (c) => c.id == focusId && c.type == ContentType.text,
+                        );
+
+                        if (content is TextContent) {
+                          final checklist = content.copyAsChecklist(focusId);
+                          editor.replaceContent(focusId, checklist);
+                        }
+                      } else {
+                        editor.addContent(
+                          ChecklistContent(
+                            order: 10,
+                            items: [ChecklistItem(text: "")],
+                          ),
+                        );
+                      }
+                    },
+
                     child: Container(
                       height: 24,
                       width: 24,
@@ -185,7 +218,7 @@ class TextEditOptionsWidget extends StatelessWidget {
                   (option) => Expanded(
                     flex: option.flex,
                     child: SigmaInkwell(
-                      onTap: option.onPressed,
+                      onTap: option.onTap,
                       child: Container(
                         alignment: AlignmentGeometry.center,
                         color: option.isActive ? SigmaColors.black : null,

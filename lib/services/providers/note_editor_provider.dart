@@ -57,6 +57,9 @@ class NoteEditor extends _$NoteEditor {
         userId: currentUserId,
       ),
     );
+    ref.onDispose(() {
+      _autoSaveTimer?.cancel();
+    });
 
     // 2️⃣ If not in state, try to load from TEMP repo (unsynced draft)
     if (existing.userId.isEmpty) {
@@ -118,10 +121,36 @@ class NoteEditor extends _$NoteEditor {
     if (shouldSaveNow) await saveNow();
   }
 
+  /// Replaces a content block at the same order and index position.
+  ///
+  /// It finds the original block by [oldContentId], replaces it with [newContent],
+  /// and preserves the surrounding content order. Triggers a debounced auto-save.
+  void replaceContent(String oldContentId, ContentModel newContent) {
+    final current = state.value;
+    if (current == null) return;
+
+    final contents = current.contents;
+    final oldIndex = contents.indexWhere((c) => c.id == oldContentId);
+
+    if (oldIndex == -1) return;
+
+    final updatedContent = newContent.copyWithOrder(contents[oldIndex].order);
+
+    final updatedContents = List<ContentModel>.from(contents)
+      ..[oldIndex] = updatedContent;
+
+    state = AsyncData(current.copyWith(contents: updatedContents));
+    _scheduleAutoSave();
+  }
+
   /// Updates a specific content block.
   ///
   /// This replaces a content block by [contentId] and triggers a debounced auto-save.
-  void updateContent(String contentId, ContentModel updatedContent) {
+  void updateContent(
+    String contentId,
+    ContentModel updatedContent, {
+    bool showSaveNow = false,
+  }) async {
     final current = state.value;
     if (current == null) return;
 
@@ -129,7 +158,12 @@ class NoteEditor extends _$NoteEditor {
       return c.id == contentId ? updatedContent : c;
     }).toList();
     state = AsyncData(current.copyWith(contents: updatedContents));
-    _scheduleAutoSave();
+    if (!ref.mounted) return;
+    if (showSaveNow) {
+      await saveNow();
+    } else {
+      _scheduleAutoSave();
+    }
   }
 
   /// Adds a new content block and schedules auto-save.
@@ -169,6 +203,7 @@ class NoteEditor extends _$NoteEditor {
   ///
   /// Prevents saving every keystroke by waiting for a short pause (2 seconds).
   void _scheduleAutoSave() {
+    if (!ref.mounted) return;
     _autoSaveTimer?.cancel();
     _autoSaveTimer = Timer(const Duration(seconds: 2), _autoSaveIfChanged);
   }
@@ -177,6 +212,8 @@ class NoteEditor extends _$NoteEditor {
   ///
   /// This keeps autosave lightweight while ensuring edits are safe.
   Future<void> _autoSaveIfChanged() async {
+    if (!ref.mounted) return;
+
     final current = state.value;
     if (current == null || _isSaving) return;
 

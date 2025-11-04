@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sigma_notes/core/utils/note_utils.dart';
 import 'package:sigma_notes/models/content/content_model.dart';
 import 'package:sigma_notes/services/providers/note_mode_provider.dart';
 
@@ -21,7 +22,7 @@ class TextContentWidget extends ConsumerStatefulWidget {
 class _TextContentWidgetState extends ConsumerState<TextContentWidget> {
   late FocusNode _focusNode;
   late final TextEditingController contentEditingController;
-  String hintText = getFunnyHintForType(ContentType.text);
+  String hintText = NoteUtils.getFunnyHintForType(ContentType.text);
 
   late TextContent content;
 

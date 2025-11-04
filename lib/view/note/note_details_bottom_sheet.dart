@@ -137,7 +137,7 @@ class NoteDetailsBottomSheet extends ConsumerWidget {
       Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         alignment: AlignmentGeometry.center,
-        child: CollaboratorWidget(size: 32),
+        child: CollaboratorWidget(size: 32, noteId: note.id),
       ),
     ];
 

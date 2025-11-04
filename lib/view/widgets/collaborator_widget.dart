@@ -1,103 +1,77 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sigma_notes/core/utils/username_generator.dart';
 import 'package:sigma_notes/models/collaborator.dart';
+import 'package:sigma_notes/services/providers/note_editor_provider.dart';
 import 'package:sigma_notes/view/widgets/sigma/sigma_image.dart';
 import 'package:sigma_notes/core/assets.dart';
 import 'package:sprung/sprung.dart';
 
-class CollaboratorWidget extends StatelessWidget {
-  final List<Collaborator> collaborators;
+class CollaboratorWidget extends ConsumerWidget {
+  // final List<Collaborator> collaborators;
   final double size;
+  final String noteId;
 
   const CollaboratorWidget({
     super.key,
     this.size = 20,
-    this.collaborators = const [],
+    required this.noteId,
+    // required this.collaborators,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
     final double avatarRadius = 0.6 * size;
     final double avatarSize = size;
     final double overlap = size / 4;
 
+    final collabs =
+        ref.watch(noteEditorProvider(noteId)).value?.collaborators ?? [];
+
+    // Take last 3 collaborators and reverse so the latest is first
+    final recentCollabs = collabs.length <= 3
+        ? collabs.reversed.toList()
+        : collabs.sublist(collabs.length - 3).reversed.toList();
     return SizedBox(
-      width: avatarSize + 2 * (avatarSize - overlap), // total width
+      width:
+          avatarSize + 2 * (avatarSize - overlap) * (recentCollabs.length / 3),
+      // total width for 3 avatars
       height: avatarSize,
       child: Stack(
         clipBehavior: Clip.none,
-        alignment: AlignmentGeometry.centerLeft,
-        children: [
-          Positioned(
-            left: 0,
+        alignment: Alignment.centerLeft,
+        children: List.generate(recentCollabs.length, (index) {
+          final collab = recentCollabs[index];
+
+          return Positioned(
+            left: index * (avatarSize - overlap),
             child:
                 CircleAvatar(
                       backgroundColor: Colors.white,
                       radius: avatarRadius,
                       child: SigmaImage(
-                        assetPath: SigmaAssets.avatar1,
+                        assetPath: collab.profileImageUrl,
                         borderRadius: BorderRadius.circular(360),
                         width: avatarSize,
                         height: avatarSize,
                       ),
                     )
                     .animate()
-                    .then(delay: 200.ms)
-                    .slideX(begin: 1, curve: Sprung(32), duration: 750.ms)
-                    .fade(duration: 400.ms, curve: Curves.easeOut)
-                    .blur(
-                      begin: Offset(5, 5),
-                      end: Offset.zero,
-                      curve: Curves.easeOut,
-                    ),
-          ),
-          Positioned(
-            left: avatarSize - overlap,
-            child:
-                CircleAvatar(
-                      backgroundColor: Colors.white,
-                      radius: avatarRadius,
-                      child: SigmaImage(
-                        assetPath: SigmaAssets.avatar2,
-                        borderRadius: BorderRadius.circular(360),
-                        width: avatarSize,
-                        height: avatarSize,
-                      ),
+                    .then(delay: (200 + index * 100).ms)
+                    .slideX(
+                      begin: 1,
+                      curve: Sprung(32),
+                      duration: (750 + index * 150).ms,
                     )
-                    .animate()
-                    .then(delay: 300.ms)
-                    .slideX(begin: 1, curve: Sprung(32), duration: 900.ms)
                     .fade(duration: 400.ms, curve: Curves.easeOut)
                     .blur(
-                      begin: Offset(5, 5),
+                      begin: const Offset(5, 5),
                       end: Offset.zero,
                       curve: Curves.easeOut,
                     ),
-          ),
-          Positioned(
-            left: 2 * (avatarSize - overlap),
-            child:
-                CircleAvatar(
-                      backgroundColor: Colors.white,
-                      radius: avatarRadius,
-                      child: SigmaImage(
-                        assetPath: SigmaAssets.avatar3,
-                        borderRadius: BorderRadius.circular(360),
-                        width: avatarSize,
-                        height: avatarSize,
-                      ),
-                    )
-                    .animate()
-                    .then(delay: 400.ms)
-                    .slideX(begin: 1, curve: Sprung(32), duration: 1200.ms)
-                    .fade(duration: 400.ms, curve: Curves.easeOut)
-                    .blur(
-                      begin: Offset(5, 5),
-                      end: Offset.zero,
-                      curve: Curves.easeOut,
-                    ),
-          ),
-        ],
+          );
+        }),
       ),
     );
   }

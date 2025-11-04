@@ -128,7 +128,7 @@ class NoteBottomBar extends ConsumerWidget {
                   switchOutCurve: Sprung(28),
                   child: switch (type) {
                     NoteBarType.edit => EditBar(),
-                    NoteBarType.text => TextBar(),
+                    NoteBarType.text => TextBar(noteId),
                     NoteBarType.voice => VoiceBar(),
                     NoteBarType.draw => DrawBar(),
                     NoteBarType.layout => LayoutBar(),

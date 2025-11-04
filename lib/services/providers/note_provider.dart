@@ -132,6 +132,26 @@ class NotesNotifier extends _$NotesNotifier {
     }
   }
 
+  // Future<void> updateNote(NoteModel note) async {
+  //   if (_currentUserId == null || !ref.mounted) return;
+  //
+  //   // 1. Update in memory immediately for UI
+  //   final current = state.value ?? [];
+  //   final updatedList = [
+  //     for (final n in current)
+  //       if (n.id == note.id) note else n,
+  //   ];
+  //   state = AsyncData(updatedList);
+  //
+  //   // 2. Persist to DB (background)
+  //   try {
+  //     await ref.read(notesRepositoryProvider).updateNote(note);
+  //   } catch (e) {
+  //     // Optional: rollback or show error
+  //     state = AsyncError(e, StackTrace.current);
+  //   }
+  // }
+
   /// Update an existing note and refresh state
   Future<void> updateNote(NoteModel note) async {
     if (_currentUserId == null) return;

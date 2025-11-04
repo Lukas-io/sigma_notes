@@ -1,10 +1,14 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sigma_notes/core/colors.dart';
 
 import '../../../core/assets.dart';
+import '../../../services/providers/biometrics_provider.dart';
 import '../../../services/providers/note_editor_provider.dart';
+import '../../../services/providers/note_provider.dart';
 import '../../widgets/commands/commands_list_item.dart';
 import '../../widgets/commands/commands_row_button.dart';
 
@@ -15,7 +19,7 @@ class CommandsBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final note = ref.read(noteEditorProvider(noteId)).value;
+    final note = ref.watch(noteEditorProvider(noteId)).value;
 
     final List<Widget> commands = [
       Padding(
@@ -52,6 +56,14 @@ class CommandsBar extends ConsumerWidget {
       CommandsListItem(
         title: (note?.isPinned ?? false) ? 'Pinned' : 'Pin',
         leading: SigmaAssets.pinSvg,
+        onTap: () {
+          ref
+              .read(noteEditorProvider(noteId).notifier)
+              .updateMetadata(
+                isPinned: !(note?.isPinned ?? false),
+                shouldSaveNow: true,
+              );
+        },
       ),
       CommandsListItem(
         title: note?.thumbnail != null ? 'Update thumbnail' : 'Add thumbnail',
@@ -75,11 +87,41 @@ class CommandsBar extends ConsumerWidget {
       CommandsListItem(
         title: (note?.locked ?? false) ? "Remove lock" : "Lock note",
         leading: SigmaAssets.commandLockSvg,
+        onTap: () async {
+          // Read LocalAuthentication directly - it's keepAlive so won't dispose
+          final auth = ref.read(localAuthProvider);
+
+          // Use the service directly - no provider lifecycle issues
+          final result = await BiometricService.authenticate(
+            auth: auth,
+            localizedReason: 'Unlock your Note',
+          );
+
+          // Check if widget is still mounted after async gap
+          if (!context.mounted) return;
+
+          log(result.toString());
+          if (result.success) {
+            ref
+                .read(noteEditorProvider(noteId).notifier)
+                .updateMetadata(
+                  locked: !(note?.locked ?? false),
+                  shouldSaveNow: true,
+                );
+          } else {
+            //TODO: Show some error or use pin
+            // Navigator.pop(context);
+          }
+        },
       ),
       CommandsListItem(
         title: 'Delete note',
         leading: SigmaAssets.deleteSvg,
         isDestructive: true,
+        onTap: () {
+          ref.read(notesProvider.notifier).deleteNote(noteId);
+          Navigator.pop(context);
+        },
       ),
       Padding(
         padding: const EdgeInsets.only(top: 8.0, left: 24, right: 24),

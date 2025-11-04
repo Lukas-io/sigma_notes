@@ -128,7 +128,6 @@ class TextContent extends ContentModel {
 
     return ChecklistContent(
       id: id,
-      // keep same ID if you want it to replace the block
       order: order,
       items: items,
       createdAt: createdAt,

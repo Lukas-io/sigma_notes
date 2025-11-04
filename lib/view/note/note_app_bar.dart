@@ -32,7 +32,13 @@ class NoteAppBar extends ConsumerWidget {
               children: [
                 // Left icon
                 SigmaInkwell(
-                  onTap: () => Navigator.pop(context),
+                  onTap: () {
+                    ref
+                        .read(noteModeStateProvider.notifier)
+                        .setMode(NoteMode.view);
+
+                    Navigator.pop(context);
+                  },
 
                   child: Container(
                     decoration: BoxDecoration(
@@ -78,7 +84,11 @@ class NoteAppBar extends ConsumerWidget {
                   ),
                 ),
 
-                Expanded(child: Center(child: CollaboratorWidget(size: 36))),
+                Expanded(
+                  child: Center(
+                    child: CollaboratorWidget(size: 36, noteId: noteId),
+                  ),
+                ),
 
                 SigmaInkwell(
                   onTap: () {
