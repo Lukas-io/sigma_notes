@@ -79,9 +79,19 @@ class RecorderState {
 /// Uses the [RecorderService] to manage the recording lifecycle.
 @riverpod
 class Recorder extends _$Recorder {
+  StreamSubscription<Amplitude>? _amplitudeSubscription;
+
   /// Build initial idle state
   @override
   RecorderState build() {
+    // Clean up any existing subscription when rebuilding
+    _amplitudeSubscription?.cancel();
+
+    // Clean up subscription when provider is disposed
+    ref.onDispose(() {
+      _amplitudeSubscription?.cancel();
+    });
+
     return const RecorderState();
   }
 
@@ -102,7 +112,14 @@ class Recorder extends _$Recorder {
       state: RecordState.record,
       id: recordingId,
     );
-    _service.amplitudeStream.listen((amp) {
+
+    // Cancel any existing subscription
+    _amplitudeSubscription?.cancel();
+
+    // Set up amplitude stream listener with proper disposal handling
+    _amplitudeSubscription = _service.amplitudeStream.listen((amp) {
+      // Check if the provider is still mounted before updating state
+      if (!ref.mounted) return;
       state = state.copyWith(
         duration: state.duration + const Duration(milliseconds: 100),
         amp: normalizeAmplitude(amp.current),
@@ -115,8 +132,6 @@ class Recorder extends _$Recorder {
   }
 
   double normalizeAmplitude(double db) {
-    print(db);
-    // Clamp values between -120 and 0
     final clamped = db.clamp(-60.0, 0.0);
     // Convert to 0.0 -> 1.0 range
     return (clamped + 60) / 60;
@@ -124,25 +139,41 @@ class Recorder extends _$Recorder {
 
   /// Stop the current recording
   Future<void> stopRecording() async {
+    // Check if the provider is still mounted before proceeding
+    if (!ref.mounted) return;
     await _service.stopRecording();
+    // Check if the provider is still mounted after async operation
+    if (!ref.mounted) return;
     state = state.copyWith(isRecording: false);
   }
 
   /// Pause the current recording
   Future<void> pauseRecording() async {
+    // Check if the provider is still mounted before proceeding
+    if (!ref.mounted) return;
     await _service.pauseRecording();
+    // Check if the provider is still mounted after async operation
+    if (!ref.mounted) return;
     state = state.copyWith(isRecording: false);
   }
 
   /// Resume a paused recording
   Future<void> resumeRecording() async {
+    // Check if the provider is still mounted before proceeding
+    if (!ref.mounted) return;
     await _service.resumeRecording();
+    // Check if the provider is still mounted after async operation
+    if (!ref.mounted) return;
     state = state.copyWith(isRecording: true);
   }
 
   /// Cancel the recording and remove the file
   Future<void> cancelRecording() async {
+    // Check if the provider is still mounted before proceeding
+    if (!ref.mounted) return;
     await _service.cancelRecording();
+    // Check if the provider is still mounted after async operation
+    if (!ref.mounted) return;
     state = RecorderState();
   }
 

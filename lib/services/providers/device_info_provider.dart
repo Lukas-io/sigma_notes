@@ -21,9 +21,18 @@ class DeviceInfo extends _$DeviceInfo {
 
   // Refresh device info
   Future<void> refresh() async {
+    // Check if the provider is still mounted before proceeding
+    if (!ref.mounted) return;
+
     state = const AsyncValue.loading();
+
+    // Check if the provider is still mounted after setting loading state
+    if (!ref.mounted) return;
+
     state = await AsyncValue.guard(() async {
       final service = ref.read(deviceInfoServiceProvider);
+      // Check if the provider is still mounted before accessing service
+      if (!ref.mounted) return state.value ?? {};
       return await service.getAllDeviceInfo();
     });
   }

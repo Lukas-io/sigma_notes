@@ -4,6 +4,7 @@ import 'package:sigma_notes/models/content/content_model.dart';
 import 'package:sigma_notes/services/providers/note_mode_provider.dart';
 
 import '../../../core/colors.dart';
+import '../../../services/providers/focus_content_provider.dart';
 import '../../../services/providers/note_editor_provider.dart';
 import '../note_screen.dart';
 
@@ -18,6 +19,7 @@ class TextContentWidget extends ConsumerStatefulWidget {
 }
 
 class _TextContentWidgetState extends ConsumerState<TextContentWidget> {
+  late FocusNode _focusNode;
   late final TextEditingController contentEditingController;
   String hintText = getFunnyHintForType(ContentType.text);
 
@@ -26,8 +28,24 @@ class _TextContentWidgetState extends ConsumerState<TextContentWidget> {
   @override
   void initState() {
     content = widget.content;
+    _focusNode = FocusNode();
     contentEditingController = TextEditingController(text: content.text.trim());
+    _focusNode.addListener(() {
+      final focusNotifier = ref.read(focusedContentStateProvider.notifier);
+      if (_focusNode.hasFocus) {
+        focusNotifier.focus(widget.content.id);
+      } else {
+        focusNotifier.unfocus(widget.content.id);
+      }
+    });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    contentEditingController.dispose();
+    super.dispose();
   }
 
   @override

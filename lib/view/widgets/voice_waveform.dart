@@ -45,7 +45,7 @@ class VoiceWaveform extends StatelessWidget {
             children: lastAmplitudes
                 .map(
                   (amp) => AnimatedContainer(
-                    duration: Duration(milliseconds: 600),
+                    duration: Duration(milliseconds: 800),
                     curve: Sprung(24),
                     width: waveWidth,
                     height: amp * waveHeight + 4,

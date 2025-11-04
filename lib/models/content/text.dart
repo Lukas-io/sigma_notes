@@ -1,3 +1,5 @@
+import 'package:uuid/uuid.dart';
+
 import 'content_model.dart';
 
 /// Text styling options
@@ -105,6 +107,39 @@ class TextContent extends ContentModel {
       indentLevel: indentLevel ?? this.indentLevel,
       parentBlockId: parentBlockId ?? this.parentBlockId,
       metadata: metadata ?? this.metadata,
+    );
+  }
+
+  /// 🧠 Converts this [TextContent] into a [ChecklistContent].
+  /// Each line of text (`\n`) becomes a [ChecklistItem].
+  ChecklistContent copyAsChecklist(String? id) {
+    final uuid = const Uuid();
+
+    // Split text into lines, ignore empty ones
+    final lines = text
+        .split('\n')
+        .map((line) => line.trim())
+        .where((line) => line.isNotEmpty)
+        .toList();
+
+    final items = lines
+        .map((line) => ChecklistItem(id: id ?? uuid.v4(), text: line))
+        .toList();
+
+    return ChecklistContent(
+      id: id,
+      // keep same ID if you want it to replace the block
+      order: order,
+      items: items,
+      createdAt: createdAt,
+      updatedAt: DateTime.now(),
+      createdBy: createdBy,
+      lastModifiedBy: lastModifiedBy,
+      isCollapsed: isCollapsed,
+      backgroundColor: backgroundColor,
+      indentLevel: indentLevel,
+      parentBlockId: parentBlockId,
+      metadata: metadata,
     );
   }
 }

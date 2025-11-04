@@ -4,6 +4,7 @@ import 'content_model.dart';
 class AudioContent extends ContentModel {
   final String url;
   final Duration? duration;
+  final List<double>? waveform;
   final int? fileSizeBytes;
 
   AudioContent({
@@ -12,6 +13,7 @@ class AudioContent extends ContentModel {
     required this.url,
     this.duration,
     this.fileSizeBytes,
+    this.waveform,
     super.createdAt,
     super.updatedAt,
     super.createdBy,
@@ -42,6 +44,7 @@ class AudioContent extends ContentModel {
     id: json['id'],
     order: json['order'] ?? 0,
     url: json['url'] ?? '',
+    waveform: json['waveform'] ?? [],
     duration: json['duration'] != null
         ? Duration(milliseconds: json['duration'])
         : null,
@@ -64,13 +67,19 @@ class AudioContent extends ContentModel {
   @override
   bool validate() => url.isNotEmpty && isWithinLimit;
 
-  AudioContent copyWith({String? url, Duration? duration, int? order}) {
+  AudioContent copyWith({
+    String? url,
+    Duration? duration,
+    int? order,
+    List<double>? waveform,
+  }) {
     return AudioContent(
       id: id,
       order: order ?? this.order,
       url: url ?? this.url,
       duration: duration ?? this.duration,
       fileSizeBytes: fileSizeBytes,
+      waveform: waveform,
       createdAt: createdAt,
       updatedAt: DateTime.now(),
       createdBy: createdBy,

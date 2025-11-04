@@ -71,33 +71,44 @@ class NoteBottomBar extends ConsumerWidget {
                     : const SizedBox(key: ValueKey('emptySpace')),
               ),
             ),
-            AnimatedSize(
+            AnimatedOpacity(
               duration: Duration(milliseconds: 300),
               curve: Curves.easeOut,
-              child: type != NoteBarType.edit && type != NoteBarType.minimal
-                  ? SigmaInkwell(
-                      onTap: () {
+              opacity: type != NoteBarType.edit && type != NoteBarType.minimal
+                  ? 1
+                  : 0,
+              child: SigmaInkwell(
+                onTap: type != NoteBarType.edit && type != NoteBarType.minimal
+                    ? () {
                         ref
                             .read(noteBarTypeStateProvider.notifier)
                             .setBarType(NoteBarType.edit);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: SigmaColors.card),
-                            color: Colors.white,
-                            borderRadius: SmoothBorderRadius(
-                              cornerRadius: 16,
-                              cornerSmoothing: 1,
-                            ),
-                          ),
-                          height: 6,
-                          width: 52,
+                      }
+                    : null,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: SigmaColors.card),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          spreadRadius: 16,
+                          color: SigmaColors.black.withOpacity(0.1),
+                          offset: Offset(-6, 10),
+                          blurRadius: 32,
                         ),
+                      ],
+                      borderRadius: SmoothBorderRadius(
+                        cornerRadius: 16,
+                        cornerSmoothing: 1,
                       ),
-                    )
-                  : SizedBox(width: 52),
+                    ),
+                    height: 6,
+                    width: 52,
+                  ),
+                ),
+              ),
             ),
             Container(
               decoration: BoxDecoration(
