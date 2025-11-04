@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
+import 'package:path/path.dart' as p;
 
 /// Service to manage audio recording
 class RecorderService {
@@ -8,7 +11,7 @@ class RecorderService {
 
   /// Current amplitude stream
   Stream<Amplitude> get amplitudeStream =>
-      _recorder.onAmplitudeChanged(const Duration(milliseconds: 250));
+      _recorder.onAmplitudeChanged(const Duration(milliseconds: 100));
 
   /// Current record state stream
   Stream<RecordState> get stateStream => _recorder.onStateChanged();
@@ -17,14 +20,21 @@ class RecorderService {
   Future<bool> hasPermission() => _recorder.hasPermission();
 
   /// Start recording to a file path
-  Future<String?> startRecording(String path) async {
+  Future<String?> startRecording(String voicePath) async {
     if (!await hasPermission()) return null;
-
+    final dir = await getApplicationDocumentsDirectory();
+    final path = p.join(dir.path, voicePath);
+    // ✅ Ensure the parent folder exists before recording
+    final fileDir = Directory(p.dirname(path));
+    if (!await fileDir.exists()) {
+      await fileDir.create(recursive: true);
+    }
     await _recorder.start(
       RecordConfig(
-        encoder: AudioEncoder.aacLc, // compressed, smaller
+        encoder: AudioEncoder.aacLc,
+        sampleRate: 44100,
+        noiseSuppress: true,
         numChannels: 1,
-        sampleRate: 16000,
       ),
       path: path,
     );

@@ -79,8 +79,6 @@ class RecorderState {
 /// Uses the [RecorderService] to manage the recording lifecycle.
 @riverpod
 class Recorder extends _$Recorder {
-  Timer? _timer;
-
   /// Build initial idle state
   @override
   RecorderState build() {
@@ -94,11 +92,9 @@ class Recorder extends _$Recorder {
   Future<void> startRecording({required String userId}) async {
     final recordingId = Uuid().v4();
 
-    final dir = await getApplicationDocumentsDirectory();
-    final path = '${dir.path}/recordings/$userId/$recordingId.m4a';
+    final path = 'recordings/$userId/$recordingId.m4a';
     final filePath = await _service.startRecording(path);
     if (filePath == null) return;
-    _timer?.cancel();
     state = RecorderState(
       isRecording: true,
       duration: Duration.zero,
@@ -107,81 +103,46 @@ class Recorder extends _$Recorder {
       id: recordingId,
     );
     _service.amplitudeStream.listen((amp) {
-      // state.whenData((s) {
       state = state.copyWith(
-        duration: state.duration + const Duration(milliseconds: 250),
+        duration: state.duration + const Duration(milliseconds: 100),
         amp: normalizeAmplitude(amp.current),
       );
-      // });
     });
 
     // _service.stateStream.listen((recordState) {
-    //   // state.whenData((s) {
     //   state = state.copyWith(state: recordState);
-    //   // });
     // });
   }
 
   double normalizeAmplitude(double db) {
     print(db);
     // Clamp values between -120 and 0
-    final clamped = db.clamp(-120.0, 0.0);
+    final clamped = db.clamp(-60.0, 0.0);
     // Convert to 0.0 -> 1.0 range
-    return (clamped + 120) / 120;
+    return (clamped + 60) / 60;
   }
 
   /// Stop the current recording
   Future<void> stopRecording() async {
     await _service.stopRecording();
-    _timer?.cancel();
-    // state.whenData(
-    //   (s) =>
     state = state.copyWith(isRecording: false);
-    // );
   }
 
   /// Pause the current recording
   Future<void> pauseRecording() async {
-    await _service.pauseRecording(); // call service
-    _timer?.cancel(); // stop the timer while paused
+    await _service.pauseRecording();
     state = state.copyWith(isRecording: false);
-    // state.whenData(
-    //   (s) => state = AsyncValue.data(
-    //     s.copyWith(isRecording: false), // not recording while paused
-    //   ),
-    // );
   }
 
   /// Resume a paused recording
   Future<void> resumeRecording() async {
-    await _service.resumeRecording(); // call service
-    // restart the timer
-    _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      state = state.copyWith(
-        duration: state.duration + const Duration(seconds: 1),
-      );
-
-      // state.whenData(
-      //   (s) => state = AsyncValue.data(
-      //     s.copyWith(duration: s.duration + const Duration(seconds: 1)),
-      //   ),
-      // );
-    });
+    await _service.resumeRecording();
     state = state.copyWith(isRecording: true);
-
-    // state.whenData(
-    //   (s) => state = AsyncValue.data(
-    //     s.copyWith(isRecording: true), // mark as recording again
-    //   ),
-    // );
   }
 
   /// Cancel the recording and remove the file
   Future<void> cancelRecording() async {
     await _service.cancelRecording();
-    _timer?.cancel();
-    // state = const AsyncValue.data(RecorderState());
     state = RecorderState();
   }
 

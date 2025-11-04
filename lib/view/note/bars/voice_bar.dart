@@ -25,7 +25,6 @@ class VoiceBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final recorder = ref.watch(recorderProvider);
-    print(recorder.amplitude);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
       child: Column(
