@@ -160,6 +160,8 @@ The app emphasizes:
 
 ---
 
+### Screenshots
+
 ## 📄 License
 
 This project was created for the Sigma Logic coding assessment.
