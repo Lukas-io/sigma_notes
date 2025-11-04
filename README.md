@@ -7,6 +7,12 @@ A secure, block-based notes application built with Flutter.
 Sigma Notes is a mobile application featuring secure authentication, local data persistence,
 and native platform integration. Built with Flutter and Riverpod for state management.
 
+## 📱 Demo Gif (Check out the complete application on YT below)
+
+### 🎥 Video Walkthrough
+
+[**▶️ Watch the app in action**](https://youtu.be/VbMWqC9qMJg)
+
 ## Features
 
 - **Secure Authentication**: Mock authentication with credential validation

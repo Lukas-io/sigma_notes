@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:uuid/uuid.dart';
@@ -81,15 +80,20 @@ class RecorderState {
 class Recorder extends _$Recorder {
   StreamSubscription<Amplitude>? _amplitudeSubscription;
 
+  // access the ref injected automatically
   /// Build initial idle state
   @override
   RecorderState build() {
     // Clean up any existing subscription when rebuilding
     _amplitudeSubscription?.cancel();
 
+    // Capture the service reference before onDispose
+    final service = ref.read(recorderServiceProvider);
+
     // Clean up subscription when provider is disposed
     ref.onDispose(() {
       _amplitudeSubscription?.cancel();
+      service.dispose();
     });
 
     return const RecorderState();
