@@ -184,27 +184,26 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                   SizedBox(height: 32),
 
-                  SigmaInkwell(
-                    onTap: () {},
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        children: [
-                          Text("Claim Account", style: TextStyle()),
-                          Spacer(),
-                          SvgPicture.asset(SigmaAssets.frontSvg),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Divider(
-                    height: 8,
-                    color: SigmaColors.gray,
-                    thickness: 0.2,
-                    endIndent: 4,
-                    indent: 4,
-                  ),
-
+                  // SigmaInkwell(
+                  //   onTap: () {},
+                  //   child: Padding(
+                  //     padding: const EdgeInsets.all(8.0),
+                  //     child: Row(
+                  //       children: [
+                  //         Text("Claim Account", style: TextStyle()),
+                  //         Spacer(),
+                  //         SvgPicture.asset(SigmaAssets.frontSvg),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
+                  // Divider(
+                  //   height: 8,
+                  //   color: SigmaColors.gray,
+                  //   thickness: 0.2,
+                  //   endIndent: 4,
+                  //   indent: 4,
+                  // ),
                   SigmaInkwell(
                     onTap: () async {
                       // Call logout from AuthProvider

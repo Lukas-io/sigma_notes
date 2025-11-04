@@ -10,8 +10,7 @@ import '../helpers/test_helpers.dart';
 
 void main() {
   group('DatabaseService', () {
-    setUp(() {
-      print('\n=== Setting up sqflite_ffi for tests ===');
+    setUpAll(() {
       initializeFfi();
     });
 
@@ -30,7 +29,6 @@ void main() {
       final db = await DatabaseService.instance.database;
       final columns = await db.rawQuery('PRAGMA table_info(users)');
       final names = columns.map((c) => c['name']).toList();
-      print('Users columns: $names');
       expect(names, containsAll(['id', 'email', 'username', 'profilePicture', 'isGuest', 'createdAt', 'updatedAt', 'isAdmin']));
       print('✅ Test PASSED: Users table schema OK');
     });
@@ -40,7 +38,6 @@ void main() {
       final db = await DatabaseService.instance.database;
       final columns = await db.rawQuery('PRAGMA table_info(notes)');
       final names = columns.map((c) => c['name']).toList();
-      print('Notes columns: $names');
       expect(names, containsAll(['id', 'title', 'thumbnail', 'label', 'locked', 'isPinned', 'isTemp', 'contents', 'collaborators', 'createdAt', 'updatedAt', 'userId']));
       print('✅ Test PASSED: Notes table schema OK');
     });
@@ -49,7 +46,6 @@ void main() {
       print('\n=== Testing: Foreign key notes(userId) -> users(id) ===');
       final db = await DatabaseService.instance.database;
       final fk = await db.rawQuery('PRAGMA foreign_key_list(notes)');
-      print('Foreign keys: $fk');
       // Look for parent table 'users' and from column 'userId'
       final hasFk = fk.any((row) => row['table'] == 'users');
       expect(hasFk, isTrue);
@@ -60,7 +56,6 @@ void main() {
       print('\n=== Testing: Singleton database instance ===');
       final a = await DatabaseService.instance.database;
       final b = await DatabaseService.instance.database;
-      print('Expected: identical instances, Actual: ${identical(a, b)}');
       expect(identical(a, b), isTrue);
       print('✅ Test PASSED: Singleton DB instance');
     });
@@ -71,7 +66,6 @@ void main() {
       final fullPath = p.join(dbPath, 'sigma_notes.db');
       await DatabaseService.instance.database;
       final exists = File(fullPath).existsSync();
-      print('DB Path: $fullPath, Exists: $exists');
       expect(exists, isTrue);
       print('✅ Test PASSED: Database file created at resolved path');
     });

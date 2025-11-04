@@ -28,7 +28,8 @@ class BiometricService {
 
   /// Get available biometric types
   static Future<List<BiometricType>> getAvailableBiometrics(
-      LocalAuthentication auth) async {
+    LocalAuthentication auth,
+  ) async {
     try {
       return await auth.getAvailableBiometrics();
     } catch (e) {

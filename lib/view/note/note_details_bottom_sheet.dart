@@ -133,12 +133,12 @@ class NoteDetailsBottomSheet extends ConsumerWidget {
           Navigator.pop(context);
         },
       ),
-      // if (note.collaborators.isNotEmpty)
-      Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        alignment: AlignmentGeometry.center,
-        child: CollaboratorWidget(size: 32, noteId: note.id),
-      ),
+      if (note.collaborators.isNotEmpty)
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          alignment: AlignmentGeometry.center,
+          child: CollaboratorWidget(size: 32, noteId: note.id),
+        ),
     ];
 
     return BackdropFilter(

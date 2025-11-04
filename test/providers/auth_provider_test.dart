@@ -16,6 +16,8 @@ class MockSecureStorage extends Mock implements FlutterSecureStorage {}
 void main() {
   setUpAll(() {
     registerFallbackValues();
+    // Needed for any<User>() in mocks
+    registerFallbackValue(User(id: 'fallback', email: 'f@f.com', username: 'f'));
   });
 
   group('Auth Provider', () {
@@ -181,7 +183,8 @@ void main() {
         notesProvider.overrideWith(NotesNotifier.new),
       ]);
 
-      final user = await container.read(authProvider.future);
+      // Force build() path
+      final user = await container.read(authProvider.notifier).build();
       print('Expected: Restored user email = $validEmail');
       print('Actual: Restored user email = ${user?.email}');
       expect(user?.email, equals(validEmail));

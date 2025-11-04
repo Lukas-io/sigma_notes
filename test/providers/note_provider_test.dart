@@ -40,6 +40,10 @@ NoteModel makeNote({
 void main() {
   setUpAll(() {
     registerFallbackValues();
+    // Needed for any<NoteModel>() in mocks
+    registerFallbackValue(
+      makeNote(id: 'fallback', userId: 'fallback'),
+    );
   });
 
   group('Notes Provider', () {
@@ -76,7 +80,8 @@ void main() {
       print('Expected: Note count = 2, Actual: ${result.length}');
       expect(result.length, 2);
       expect(container.read(notesProvider).value, isNotEmpty);
-      verify(() => mockRepository.getAllNotes(userId)).called(1);
+      // Called once during provider build() + once in explicit call
+      verify(() => mockRepository.getAllNotes(userId)).called(2);
       print('✅ Test PASSED: Notes loaded for user\n');
     });
 
@@ -159,7 +164,8 @@ void main() {
         return [];
       });
       await container.read(notesProvider.notifier).loadNotesForCurrentUser();
-      verify(() => mockRepository.getAllNotes(userId)).called(1);
+      // build() + explicit call
+      verify(() => mockRepository.getAllNotes(userId)).called(2);
       print('✅ Test PASSED: Correct userId passed to repository\n');
     });
 
