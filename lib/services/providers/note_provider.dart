@@ -48,9 +48,18 @@ class NotesNotifier extends _$NotesNotifier {
       _currentUserId = user.id;
     }
 
+    // Check if the provider is still mounted before proceeding
+    if (!ref.mounted) return state.value ?? [];
+    
     state = const AsyncValue.loading();
+    
+    // Check if the provider is still mounted after setting loading state
+    if (!ref.mounted) return state.value ?? [];
+    
     state = await AsyncValue.guard(() async {
       final repository = ref.read(notesRepositoryProvider);
+      // Check if the provider is still mounted before accessing repository
+      if (!ref.mounted) return state.value ?? [];
       return repository.getAllNotes(_currentUserId!);
     });
 
@@ -61,10 +70,21 @@ class NotesNotifier extends _$NotesNotifier {
   Future<void> createNote(NoteModel note) async {
     if (_currentUserId == null) return;
 
+    // Check if the provider is still mounted before proceeding
+    if (!ref.mounted) return;
+    
     state = const AsyncValue.loading();
+    
+    // Check if the provider is still mounted after setting loading state
+    if (!ref.mounted) return;
+    
     state = await AsyncValue.guard(() async {
       final repository = ref.read(notesRepositoryProvider);
+      // Check if the provider is still mounted before accessing repository
+      if (!ref.mounted) return state.value ?? [];
       await repository.createNote(note);
+      // Check if the provider is still mounted after creating note
+      if (!ref.mounted) return state.value ?? [];
       return repository.getAllNotes(_currentUserId!);
     });
   }
@@ -72,10 +92,18 @@ class NotesNotifier extends _$NotesNotifier {
   /// Fetches a single note by its [id].
   /// Returns the note and refreshes the state for consistency.
   Future<NoteModel?> getNoteById(String id) async {
+    // Check if the provider is still mounted before proceeding
+    if (!ref.mounted) return null;
+    
     state = const AsyncValue.loading();
+    
+    // Check if the provider is still mounted after setting loading state
+    if (!ref.mounted) return null;
 
     state = await AsyncValue.guard<List<NoteModel>>(() async {
       final repository = ref.read(notesRepositoryProvider);
+      // Check if the provider is still mounted before accessing repository
+      if (!ref.mounted) return state.value ?? <NoteModel>[];
       final note = await repository.getNoteById(id);
 
       // If no note found, just return existing state list (or empty)
@@ -103,11 +131,21 @@ class NotesNotifier extends _$NotesNotifier {
   Future<void> updateNote(NoteModel note) async {
     if (_currentUserId == null) return;
 
+    // Check if the provider is still mounted before proceeding
+    if (!ref.mounted) return;
+    
     state = const AsyncValue.loading();
+    
+    // Check if the provider is still mounted after setting loading state
+    if (!ref.mounted) return;
+    
     state = await AsyncValue.guard(() async {
       final repository = ref.read(notesRepositoryProvider);
+      // Check if the provider is still mounted before accessing repository
+      if (!ref.mounted) return state.value ?? [];
       await repository.updateNote(note);
-
+      // Check if the provider is still mounted after updating note
+      if (!ref.mounted) return state.value ?? [];
       return await repository.getAllNotes(_currentUserId!);
     });
   }

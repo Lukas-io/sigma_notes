@@ -8,7 +8,9 @@ import '../../models/content/content_model.dart';
 import '../database_service.dart';
 
 class NotesRepository {
-  final DatabaseService _dbService = DatabaseService.instance;
+  final DatabaseService _dbService;
+
+  NotesRepository({DatabaseService? dbService}) : _dbService = dbService ?? DatabaseService.instance;
 
   /// Convert NoteModel to SQLite-compatible map
   Map<String, dynamic> _noteToSQLiteMap(NoteModel note) {
