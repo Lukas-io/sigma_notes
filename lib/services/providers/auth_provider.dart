@@ -90,7 +90,13 @@ class Auth extends _$Auth {
       state = AsyncValue.data(user);
 
       // Load notes for this user
-      await ref.read(notesProvider.notifier).loadNotesForCurrentUser();
+      // Use a try-catch block to prevent errors from propagating
+      try {
+        await ref.read(notesProvider.notifier).loadNotesForCurrentUser();
+      } catch (e) {
+        // Log the error but don't let it break the login flow
+        log('Error loading notes for user: $e');
+      }
 
       return true;
     } catch (e, stack) {
@@ -126,7 +132,13 @@ class Auth extends _$Auth {
       state = AsyncValue.data(guestUser);
 
       // Load notes for guest
-      await ref.read(notesProvider.notifier).loadNotesForCurrentUser();
+      // Use a try-catch block to prevent errors from propagating
+      try {
+        await ref.read(notesProvider.notifier).loadNotesForCurrentUser();
+      } catch (e) {
+        // Log the error but don't let it break the login flow
+        log('Error loading notes for guest: $e');
+      }
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }

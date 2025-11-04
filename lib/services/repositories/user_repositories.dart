@@ -5,7 +5,9 @@ import '../../models/user.dart';
 import '../database_service.dart';
 
 class UserRepository {
-  final DatabaseService _dbService = DatabaseService.instance;
+  final DatabaseService _dbService;
+
+  UserRepository({DatabaseService? dbService}) : _dbService = dbService ?? DatabaseService.instance;
 
   /// Get a user by their email
   Future<User?> getUserByEmail(String email) async {
