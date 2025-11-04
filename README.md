@@ -1,4 +1,4 @@
-# Sigma Notes
+# Sigma Notes - A digital vault for wandering ideas🤸‍♂️
 
 A secure, block-based notes application built with Flutter.
 
@@ -8,6 +8,8 @@ Sigma Notes is a mobile application featuring secure authentication, local data 
 and native platform integration. Built with Flutter and Riverpod for state management.
 
 ## 📱 Demo Gif (Check out the complete application on YT below)
+![sigma-notes](https://github.com/user-attachments/assets/a5e62a3a-f0c5-454e-845f-1dd55eff3d79)
+
 
 ### 🎥 Video Walkthrough
 
